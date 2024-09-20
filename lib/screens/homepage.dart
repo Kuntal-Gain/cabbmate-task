@@ -1,6 +1,9 @@
+import 'package:cabmate_task/screens/payment/payment_demo.dart';
 import 'package:cabmate_task/screens/profile/profile.dart';
 import 'package:cabmate_task/screens/ride/publish_ride.dart';
+import 'package:cabmate_task/screens/ride/search_rides.dart';
 import 'package:cabmate_task/screens/ride/trip_screen.dart';
+import 'package:cabmate_task/service/notification_service.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,11 +15,18 @@ class HomePage extends StatefulWidget {
 
 class _HomepageState extends State<HomePage> {
   int selectedIdx = 0;
+  final NotificationService _notificationService = NotificationService();
+
+  @override
+  void initState() {
+    _notificationService.initNotification();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> screens = [
-      const Center(child: Text('Search')),
+      const SearchRides(),
       Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -36,7 +46,7 @@ class _HomepageState extends State<HomePage> {
                   child: const Text('Create Ride'))),
         ],
       ),
-      const Center(child: Text('Messages')),
+      const PaymentDemo(),
       const ProfileScreen(),
     ];
 

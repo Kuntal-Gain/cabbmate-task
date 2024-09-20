@@ -1,4 +1,6 @@
 import 'package:cabmate_task/screens/giftcard/gift_card_screen.dart';
+import 'package:cabmate_task/screens/profile/contact_us.dart';
+import 'package:cabmate_task/screens/profile/qa_screen.dart';
 
 import 'package:cabmate_task/screens/profile/verify_email_screen.dart';
 import 'package:cabmate_task/widgets/profile_card_tile.dart';
@@ -274,7 +276,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
-            profileCardTile(Colors.red, "Payment Method", Icons.payment),
+            GestureDetector(
+                child: profileCardTile(
+                    Colors.red, "Payment Method", Icons.payment)),
             GestureDetector(
               onTap: () {},
               child: profileCardTile(Colors.blue, "My Wallet", Icons.wallet),
@@ -315,11 +319,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
             profileCardTile(Colors.black, "Privacy Policy", Icons.privacy_tip),
             profileCardTile(
                 Colors.redAccent, "Terms & Conditions", Icons.file_open),
-            profileCardTile(
-                Colors.pinkAccent, "FAQ", Icons.question_mark_outlined),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (_) => const FQAScreen()));
+              },
+              child: profileCardTile(
+                  Colors.pinkAccent, "FAQ", Icons.question_mark_outlined),
+            ),
             profileCardTile(Colors.greenAccent, "Live Chat", Icons.chat),
-            profileCardTile(
-                Colors.orangeAccent, "Contact Us", Icons.question_answer),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (ctx) => const ContactUsPage(),
+                  ),
+                );
+              },
+              child: profileCardTile(
+                  Colors.orangeAccent, "Contact Us", Icons.question_answer),
+            ),
             const Padding(padding: EdgeInsets.all(10)),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),

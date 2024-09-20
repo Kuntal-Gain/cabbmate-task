@@ -5,11 +5,14 @@ import 'package:cabmate_task/service/api_service.dart';
 import 'package:cabmate_task/utils/gift_card.dart';
 import 'package:cabmate_task/utils/payment.dart';
 import 'package:cabmate_task/widgets/payment_card.dart';
+import 'package:delightful_toast/delight_toast.dart';
+import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
   const PaymentMethodScreen({super.key, required this.card});
@@ -179,6 +182,31 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     }
   }
 
+  // Corrected Bottom Sheet method
+  void showCardDetailsBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: 16,
+            right: 16,
+            top: 20,
+          ),
+          child: CardDetailsForm(
+            giftcard: widget.card,
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -233,21 +261,20 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           ),
           GestureDetector(
             onTap: () async {
-              final message =
-                  'Hi , ${widget.card.reciverName}. You have received a Gift Card worth \$${widget.card.amount} from ${widget.card.senderName}. You can redeem it on cabbmate by entering your Gift code: ${widget.card.giftCardNum}';
-              final number = "91${widget.card.reciverPhone}";
+              // final message =
+              //     'Hi , ${widget.card.reciverName}. You have received a Gift Card worth \$${widget.card.amount} from ${widget.card.senderName}. You can redeem it on cabbmate by entering your Gift code: ${widget.card.giftCardNum}';
+              // final number = "91${widget.card.reciverPhone}";
 
-              await ApiService().sendSms(number, message).then((val) {
-                // send mail
-                sendEmailWithGmailSMTP();
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (_) => PaymentSuccessScreen(
-                      giftCard: widget.card,
-                    ),
-                  ),
-                );
-              });
+              // await ApiService().sendSms(number, message).then((val) {
+              //   // send mail
+              //   // sendEmailWithGmailSMTP();
+
+              // });
+
+              // payment logic
+              showCardDetailsBottomSheet(context);
+
+              // await ApiService().payNow();
             },
             child: Container(
               height: 60,
@@ -271,6 +298,152 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class CardDetailsForm extends StatelessWidget {
+  final TextEditingController cardNumberController = TextEditingController();
+  final TextEditingController expiryDateController = TextEditingController();
+  final TextEditingController cvvController = TextEditingController();
+
+  CardDetailsForm({super.key, required this.giftcard});
+
+  final GiftCard giftcard;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Text(
+          'Enter Card Details',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 20),
+        Container(
+          height: 75,
+          padding: EdgeInsets.all(12),
+          width: double.infinity,
+          decoration: BoxDecoration(
+            border: Border.all(color: Color(0xffc2c2c2)),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Center(
+            child: TextField(
+              controller: cardNumberController,
+              decoration: const InputDecoration(
+                labelText: 'Card Number',
+                border: InputBorder.none,
+              ),
+              keyboardType: TextInputType.number,
+            ),
+          ),
+        ),
+        const SizedBox(height: 15),
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                height: 75,
+                padding: EdgeInsets.all(12),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Color(0xffc2c2c2)),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Center(
+                  child: TextField(
+                    controller: expiryDateController,
+                    decoration: const InputDecoration(
+                      labelText: 'Expiry Date',
+                      border: InputBorder.none,
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Container(
+                height: 75,
+                padding: EdgeInsets.all(12),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Color(0xffc2c2c2)),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Center(
+                  child: TextField(
+                    controller: cvvController,
+                    decoration: const InputDecoration(
+                      labelText: 'CVV',
+                      border: InputBorder.none,
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        GestureDetector(
+          onTap: () async {
+            final cardNumber = cardNumberController.text;
+            final expiryDate = expiryDateController.text;
+            final cvv = cvvController.text;
+
+            // Initiate the payment
+
+            var isSuccessful = await ApiService().payNow();
+            print(isSuccessful);
+            if (isSuccessful) {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => PaymentSuccessScreen(giftCard: giftcard)));
+            } else {
+              DelightToastBar(
+                builder: (context) => const ToastCard(
+                  leading: Icon(
+                    Icons.cancel,
+                    size: 28,
+                  ),
+                  title: Text(
+                    "Payment Failed! Try Again",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ).show(context);
+            }
+          },
+          child: Container(
+            height: 60,
+            width: double.infinity,
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Center(
+              child: Text(
+                'Pay',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
