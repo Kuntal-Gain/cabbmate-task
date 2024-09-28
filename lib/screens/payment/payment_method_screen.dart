@@ -14,10 +14,17 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class PaymentMethodScreen extends StatefulWidget {
-  const PaymentMethodScreen({super.key, required this.card});
+enum PaymentType { GiftCard, Wallet, Payment }
 
-  final GiftCard card;
+class PaymentMethodScreen extends StatefulWidget {
+  const PaymentMethodScreen({
+    super.key,
+    required this.paymentType,
+    required this.paymentData,
+  });
+
+  final PaymentType paymentType;
+  final dynamic paymentData;
 
   @override
   State<PaymentMethodScreen> createState() => _PaymentMethodScreenState();
@@ -31,7 +38,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 
   int selectedIdx = 0;
 
-  String generateEmail() {
+  String generateEmail(GiftCard card) {
     return """
     <html>
 
@@ -106,10 +113,10 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 
 <body>
     <div style="text-align: center;">
-        <h2 class="header">Hi ${widget.card.reciverName},</h2>
+        <h2 class="header">Hi ${card.reciverName},</h2>
         <p>
             You have received a Gift Card worth
-            <strong style="color: red;">\$${widget.card.amount}</strong>
+            <strong style="color: red;">\$${card.amount}</strong>
             from Emma Brown.
         </p>
         <p>
@@ -117,17 +124,17 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         </p>
     </div>
     <div class="container">
-        <img src=${widget.card.imageId}
+        <img src=${card.imageId}
             alt="Gift Card" />
         <h3 style="color: blue; text-align: center;">Many many Happy returns of the Day</h3>
         <h4 style="text-align: center;">Gift Card</h4>
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
             <div>
                 <strong>Gift Code</strong><br>
-                <span class="gift-code">${widget.card.giftCardNum}</span>
+                <span class="gift-code">${card.giftCardNum}</span>
             </div>
             <div style="border-left: 2px solid grey; padding-left: 20px; margin-left: 20px;">
-                <span class="gift-amount">\$${widget.card.amount}</span><br>
+                <span class="gift-amount">\$${card.amount}</span><br>
                 <span>Use at Cabmate App</span><br><br>
                 <span style="color: blue;">*Conditions Apply</span>
             </div>
@@ -148,7 +155,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   }
 
   // Method to send email
-  Future<void> sendEmailWithGmailSMTP() async {
+  Future<void> sendEmailWithGmailSMTP(GiftCard card) async {
     // Replace with your email and password (or App Password if you have 2FA enabled)
     String username = dotenv.env['EMAIL_ID']!;
     String password = dotenv.env['PASSWRD']!;
@@ -159,10 +166,9 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     // Compose the email
     final message = Message()
       ..from = Address(username, 'Cabbmate')
-      ..recipients
-          .add(widget.card.reciverEmail) // Replace with recipient's email
+      ..recipients.add(card.reciverEmail) // Replace with recipient's email
       ..subject = 'Gift Card Received' // Subject of the email
-      ..html = generateEmail(); // HTML content of the email
+      ..html = generateEmail(widget.paymentData); // HTML content of the email
 
     try {
       // Send the email
@@ -200,7 +206,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             top: 20,
           ),
           child: CardDetailsForm(
-            giftcard: widget.card,
+            data: widget.paymentData,
+            type: widget.paymentType,
           ),
         );
       },
@@ -261,15 +268,18 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           ),
           GestureDetector(
             onTap: () async {
-              // final message =
-              //     'Hi , ${widget.card.reciverName}. You have received a Gift Card worth \$${widget.card.amount} from ${widget.card.senderName}. You can redeem it on cabbmate by entering your Gift code: ${widget.card.giftCardNum}';
-              // final number = "91${widget.card.reciverPhone}";
+              if (widget.paymentType == PaymentType.GiftCard) {
+                final message =
+                    'Hi , ${widget.paymentData.reciverName}. You have received a Gift Card worth \$${widget.paymentData.amount} from ${widget.paymentData.senderName}. You can redeem it on cabbmate by entering your Gift code: ${widget.paymentData.giftCardNum}';
+                final number = "91${widget.paymentData.reciverPhone}";
 
-              // await ApiService().sendSms(number, message).then((val) {
-              //   // send mail
-              //   // sendEmailWithGmailSMTP();
-
-              // });
+                await ApiService().sendSms(number, message).then((val) {
+                  // send mail
+                  sendEmailWithGmailSMTP(widget.paymentData);
+                });
+              } else if (widget.paymentType == PaymentType.Payment) {
+                print("Pay");
+              }
 
               // payment logic
               showCardDetailsBottomSheet(context);
@@ -307,9 +317,10 @@ class CardDetailsForm extends StatelessWidget {
   final TextEditingController expiryDateController = TextEditingController();
   final TextEditingController cvvController = TextEditingController();
 
-  CardDetailsForm({super.key, required this.giftcard});
+  CardDetailsForm({super.key, required this.data, required this.type});
 
-  final GiftCard giftcard;
+  final PaymentType type;
+  final dynamic data;
 
   @override
   Widget build(BuildContext context) {
@@ -403,8 +414,13 @@ class CardDetailsForm extends StatelessWidget {
             var isSuccessful = await ApiService().payNow();
             print(isSuccessful);
             if (isSuccessful) {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => PaymentSuccessScreen(giftCard: giftcard)));
+              if (type == PaymentType.GiftCard) {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => PaymentSuccessScreen(giftCard: data)));
+              } else if (type == PaymentType.Payment) {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              }
             } else {
               DelightToastBar(
                 builder: (context) => const ToastCard(

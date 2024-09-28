@@ -549,7 +549,7 @@ class _GiftCardScreenState extends State<GiftCardScreen> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => PaymentMethodScreen(
-                          card: GiftCard(
+                          paymentData: GiftCard(
                             imageId: cards[selectedIdx],
                             amount: ammount,
                             message: messageController.text,
@@ -559,6 +559,7 @@ class _GiftCardScreenState extends State<GiftCardScreen> {
                             senderName: 'Emma Brown',
                             giftCardNum: code,
                           ),
+                          paymentType: PaymentType.GiftCard,
                         ),
                       ),
                     );

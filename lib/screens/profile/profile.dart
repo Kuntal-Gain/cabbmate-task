@@ -1,5 +1,6 @@
 import 'package:cabmate_task/screens/giftcard/gift_card_screen.dart';
 import 'package:cabmate_task/screens/profile/contact_us.dart';
+import 'package:cabmate_task/screens/profile/notification_screen.dart';
 import 'package:cabmate_task/screens/profile/qa_screen.dart';
 
 import 'package:cabmate_task/screens/profile/verify_email_screen.dart';
@@ -211,8 +212,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             profileCardTile(Colors.brown, "About You", Icons.person),
-            profileCardTile(
-                Colors.deepPurple, "Notifications", Icons.notifications),
+            GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => NotificationScreen())),
+              child: profileCardTile(
+                  Colors.deepPurple, "Notifications", Icons.notifications),
+            ),
             profileCardTile(Colors.orange, "Invite Friends", Icons.inbox),
             profileCardTile(Colors.greenAccent.shade100, "Emergency Contacts",
                 Icons.call_rounded),
@@ -350,7 +355,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
-            profileCardTile(Colors.blueAccent, "Logout", Icons.logout),
+            GestureDetector(
+                onTap: () => FirebaseAuth.instance.signOut(),
+                child:
+                    profileCardTile(Colors.blueAccent, "Logout", Icons.logout)),
           ],
         ),
       ),

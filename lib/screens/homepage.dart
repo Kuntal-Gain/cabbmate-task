@@ -1,6 +1,8 @@
+import 'package:cabmate_task/Rides_RideDetails/my_ride_selection.dart';
 import 'package:cabmate_task/screens/payment/payment_demo.dart';
 import 'package:cabmate_task/screens/profile/profile.dart';
 import 'package:cabmate_task/screens/ride/publish_ride.dart';
+import 'package:cabmate_task/screens/ride/publish_ride_2.dart';
 import 'package:cabmate_task/screens/ride/search_rides.dart';
 import 'package:cabmate_task/screens/ride/trip_screen.dart';
 import 'package:cabmate_task/service/notification_service.dart';
@@ -26,27 +28,9 @@ class _HomepageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> screens = [
-      const SearchRides(),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-              child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (ctx) => const TripScreen()));
-                  },
-                  child: const Text('Show Trip'))),
-          Center(
-              child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (ctx) => const PublishRideScreen()));
-                  },
-                  child: const Text('Create Ride'))),
-        ],
-      ),
-      const PaymentDemo(),
+      SearchRides(),
+      MyRidesScreen(),
+      MyRidesScreen(),
       const ProfileScreen(),
     ];
 
@@ -79,7 +63,7 @@ class _HomepageState extends State<HomePage> {
               Icons.message,
               color: selectedIdx == 2 ? Colors.blue : Colors.grey,
             ),
-            label: 'Messages',
+            label: 'My Rides',
           ),
           BottomNavigationBarItem(
             icon: Icon(
