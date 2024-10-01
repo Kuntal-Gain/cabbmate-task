@@ -1,11 +1,13 @@
 import 'package:cabmate_task/screens/credential/name_registration.dart';
+import 'package:cabmate_task/utils/snackbar.dart';
 import 'package:flutter/material.dart';
 
 class OtpScreen extends StatefulWidget {
   // ignore: non_constant_identifier_names
   final String phone_number;
+  final String otp;
 
-  const OtpScreen({super.key, required this.phone_number});
+  const OtpScreen({super.key, required this.phone_number, required this.otp});
 
   @override
   _OtpScreenState createState() => _OtpScreenState();
@@ -14,34 +16,6 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   final _otpController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
-  // Function to show the dialog box if OTP is empty
-  void _showDialog(String message) {
-    showDialog(
-      barrierColor: Colors.white,
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15.0)),
-          ),
-          title: const Text(
-            "Invalid Input",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,13 +81,18 @@ class _OtpScreenState extends State<OtpScreen> {
         backgroundColor: Colors.blue,
         shape: const CircleBorder(),
         onPressed: () {
-          // Check if OTP is entered
-          if (_otpController.text.isEmpty) {
-            _showDialog('Please enter the OTP.');
+          // Proceed with OTP verification logic
+          if (widget.otp == _otpController.text) {
+            successBar(context, "OTP verified Successfully");
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => NameScreen(
+                          phone: widget.phone_number,
+                        )));
           } else {
-            // Proceed with OTP verification logic
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => NameScreen()));
+            failureBar(context, "Enter a Valid OTP");
+            _otpController.clear();
           }
         },
         child: const Icon(

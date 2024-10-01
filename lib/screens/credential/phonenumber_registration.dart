@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
+import '../../service/api_service.dart';
 import 'otp_registration.dart';
 
 class MyApp extends StatelessWidget {
@@ -24,10 +27,11 @@ class MobileNumberScreen extends StatefulWidget {
 
 class _MobileNumberScreenState extends State<MobileNumberScreen> {
   final _mobileNumberController = TextEditingController();
-  String _selectedCountryCode = '+1'; // Default country code
+  String _selectedCountryCode = '+91'; // Default country code
+  String otp = "";
 
   // List of country codes
-  final List<String> _countryCodes = ['+1', '+91', '+44', '+61'];
+  final List<String> _countryCodes = ['+91', '+1', '+44', '+61'];
 
   // Method to validate and show dialog
   bool _validateAndSubmit() {
@@ -65,9 +69,23 @@ class _MobileNumberScreenState extends State<MobileNumberScreen> {
     );
   }
 
+  String generateOtp() {
+    var random = Random();
+    int otp = 100000 +
+        random.nextInt(900000); // Generates a number between 100000 and 999999
+    return otp.toString();
+  }
+
+  @override
+  void initState() {
+    otp = generateOtp();
+    super.initState();
+  }
+
   @override
   void dispose() {
     _mobileNumberController.dispose();
+
     super.dispose();
   }
 
@@ -196,15 +214,19 @@ class _MobileNumberScreenState extends State<MobileNumberScreen> {
         backgroundColor: Colors.blue,
         shape: const CircleBorder(),
         onPressed: () {
+          final message = "Your Cabbmate Verification code is $otp";
+          final ph = _selectedCountryCode + _mobileNumberController.text;
           bool store = _validateAndSubmit();
           if (store == false) {
             _validateAndSubmit();
           } else {
-            Navigator.push(
+            ApiService().sendSms(ph, message);
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => OtpScreen(
                   phone_number: _mobileNumberController.text.toString(),
+                  otp: otp,
                 ),
               ),
             );

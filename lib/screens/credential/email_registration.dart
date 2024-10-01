@@ -1,13 +1,22 @@
 import 'package:cabmate_task/screens/homepage.dart';
+import 'package:cabmate_task/service/firebase_service.dart';
+import 'package:cabmate_task/utils/snackbar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class EmailInputScreen extends StatefulWidget {
+  const EmailInputScreen({super.key, required this.name, required this.phone});
+
+  final String name;
+  final String phone;
+
   @override
   _EmailInputScreenState createState() => _EmailInputScreenState();
 }
 
 class _EmailInputScreenState extends State<EmailInputScreen> {
   final _emailController = TextEditingController();
+  final _passwordContreoller = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _showError = false;
 
@@ -26,33 +35,6 @@ class _EmailInputScreenState extends State<EmailInputScreen> {
     }
 
     return null;
-  }
-
-  // Show dialog box
-  void _showDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15.0)),
-          ),
-          title: Text(
-            "Invalid Email",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -81,11 +63,12 @@ class _EmailInputScreenState extends State<EmailInputScreen> {
         child: Form(
           key: _formKey,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 20),
               Text(
-                "What's your email?",
+                "What's your email & Password",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 20),
@@ -102,6 +85,22 @@ class _EmailInputScreenState extends State<EmailInputScreen> {
                 keyboardType: TextInputType.emailAddress,
                 // We will manually trigger the validation below instead of using a validator
               ),
+              SizedBox(
+                height: 20,
+              ),
+              TextFormField(
+                controller: _passwordContreoller,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+
+                  border: UnderlineInputBorder(),
+                  errorText: _showError
+                      ? 'Enter a valid Password'
+                      : null, // Dynamic error message display
+                ),
+                keyboardType: TextInputType.text,
+                // We will manually trigger the validation below instead of using a validator
+              ),
               Spacer(),
               SizedBox(height: 20),
             ],
@@ -111,20 +110,38 @@ class _EmailInputScreenState extends State<EmailInputScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue,
         shape: const CircleBorder(),
-        onPressed: () {
-          // Manually validate email
-          if (_validateEmail(_emailController.text) != null) {
-            setState(() {
-              _showError = true; // Show error
-            });
-            _showDialog('Please enter a valid email address.');
-          } else {
-            setState(() {
-              _showError = false; // Clear error if valid email
-            });
-            // Perform your next action here
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (_) => HomePage()));
+        onPressed: () async {
+          try {
+            // Sign up the user
+            User? user = await FirebaseService()
+                .signUp(_emailController.text, _passwordContreoller.text);
+
+            if (user != null) {
+              final uid = user.uid;
+
+              // Create user in Firestore
+              FirebaseService().createUser(uid, {
+                "uid": uid,
+                "name": widget.name,
+                "email": _emailController.text,
+                "password": _passwordContreoller.text,
+                "image": "",
+                "wallet": 0.0,
+              }).then((_) {
+                successBar(context, "Signup Successful");
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (_) => HomePage(),
+                  ),
+                );
+              }).catchError((error) {
+                failureBar(context, "Failed to create user: $error");
+              });
+            } else {
+              failureBar(context, "Signup failed. Please try again.");
+            }
+          } catch (e) {
+            failureBar(context, "Signup failed: $e");
           }
         },
         child: const Icon(

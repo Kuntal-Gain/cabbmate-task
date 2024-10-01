@@ -2,21 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'email_registration.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: NameScreen(),
-    );
-  }
-}
-
 class NameScreen extends StatefulWidget {
+  const NameScreen({super.key, required this.phone});
+
+  final String phone;
+
   @override
   _NameScreenState createState() => _NameScreenState();
 }
@@ -130,8 +120,15 @@ class _NameScreenState extends State<NameScreen> {
           if (_validateAndSubmit() == false) {
             _validateAndSubmit();
           } else {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => EmailInputScreen()));
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EmailInputScreen(
+                          name: _firstNameController.text +
+                              " " +
+                              _lastNameController.text,
+                          phone: widget.phone,
+                        )));
           }
         },
         child: const Icon(
