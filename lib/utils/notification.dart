@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class NotificationModel {
   final String label;
   final String description;
@@ -14,4 +12,5 @@ class NotificationModel {
   });
 }
 
+// ignore: constant_identifier_names
 enum Category { Notifications, News }

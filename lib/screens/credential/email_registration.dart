@@ -1,6 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cabmate_task/screens/homepage.dart';
 import 'package:cabmate_task/service/firebase_service.dart';
 import 'package:cabmate_task/utils/snackbar.dart';
+import 'package:cabmate_task/utils/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +14,7 @@ class EmailInputScreen extends StatefulWidget {
   final String phone;
 
   @override
+  // ignore: library_private_types_in_public_api
   _EmailInputScreenState createState() => _EmailInputScreenState();
 }
 
@@ -21,6 +25,7 @@ class _EmailInputScreenState extends State<EmailInputScreen> {
   bool _showError = false;
 
   // Email validation function
+  // ignore: unused_element
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your email';
@@ -66,18 +71,18 @@ class _EmailInputScreenState extends State<EmailInputScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 "What's your email & Password",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'Email Address',
                   hintText: 'emma.brown@demo.com',
-                  border: UnderlineInputBorder(),
+                  border: const UnderlineInputBorder(),
                   errorText: _showError
                       ? 'Enter a valid email address'
                       : null, // Dynamic error message display
@@ -85,7 +90,7 @@ class _EmailInputScreenState extends State<EmailInputScreen> {
                 keyboardType: TextInputType.emailAddress,
                 // We will manually trigger the validation below instead of using a validator
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               TextFormField(
@@ -93,7 +98,7 @@ class _EmailInputScreenState extends State<EmailInputScreen> {
                 decoration: InputDecoration(
                   labelText: 'Password',
 
-                  border: UnderlineInputBorder(),
+                  border: const UnderlineInputBorder(),
                   errorText: _showError
                       ? 'Enter a valid Password'
                       : null, // Dynamic error message display
@@ -101,8 +106,8 @@ class _EmailInputScreenState extends State<EmailInputScreen> {
                 keyboardType: TextInputType.text,
                 // We will manually trigger the validation below instead of using a validator
               ),
-              Spacer(),
-              SizedBox(height: 20),
+              const Spacer(),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -120,18 +125,25 @@ class _EmailInputScreenState extends State<EmailInputScreen> {
               final uid = user.uid;
 
               // Create user in Firestore
-              FirebaseService().createUser(uid, {
-                "uid": uid,
-                "name": widget.name,
-                "email": _emailController.text,
-                "password": _passwordContreoller.text,
-                "image": "",
-                "wallet": 0.0,
-              }).then((_) {
+              FirebaseService()
+                  .createUser(
+                uid,
+                UserModel(
+                  uid: uid,
+                  name: widget.name,
+                  email: _emailController.text,
+                  image: "",
+                  wallet: 10,
+                  number: widget.phone,
+                ),
+              )
+                  .then((_) {
+                // ignore: duplicate_ignore
+                // ignore: use_build_context_synchronously
                 successBar(context, "Signup Successful");
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (_) => HomePage(),
+                    builder: (_) => const HomePage(),
                   ),
                 );
               }).catchError((error) {

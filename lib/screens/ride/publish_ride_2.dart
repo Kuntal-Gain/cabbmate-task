@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:cabmate_task/screens/ride/publish_ride_3.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -152,9 +153,26 @@ class _PublishRideScreen2State extends State<PublishRideScreen2> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> screens = [
-      const Center(child: Text('Search')),
-      _isLoading
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Publish Ride',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: Colors.blue,
+          ),
+        ),
+      ),
+      body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -252,70 +270,59 @@ class _PublishRideScreen2State extends State<PublishRideScreen2> {
                     ),
                   ),
                 ),
+                Container(
+                  height: 60,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: Colors.blue,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        height: 50,
+                        width: 50,
+                        margin: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: IconButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            icon: const Icon(Icons.arrow_back)),
+                      ),
+                      const Text(
+                        'Steps 2/5',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Container(
+                        height: 50,
+                        width: 50,
+                        margin: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: IconButton(
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (_) => const PublishRideScreen3()));
+                            },
+                            icon: const Icon(Icons.arrow_forward)),
+                      )
+                    ],
+                  ),
+                )
               ],
             ),
-      const Center(child: Text('Messages')),
-      const Center(child: Text('Profile')),
-    ];
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Publish Ride',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.blue,
-          ),
-        ),
-      ),
-      body: screens[selectedIdx],
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: (val) {
-          setState(() {
-            selectedIdx = val;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.search,
-              color: selectedIdx == 0 ? Colors.blue : Colors.grey,
-            ),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.add_circle_outline,
-              color: selectedIdx == 1 ? Colors.blue : Colors.grey,
-            ),
-            label: 'Add',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.message,
-              color: selectedIdx == 2 ? Colors.blue : Colors.grey,
-            ),
-            label: 'Messages',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.person,
-              color: selectedIdx == 3 ? Colors.blue : Colors.grey,
-            ),
-            label: 'Profile',
-          ),
-        ],
-      ),
     );
   }
 }

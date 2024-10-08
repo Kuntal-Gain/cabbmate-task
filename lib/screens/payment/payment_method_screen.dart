@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, constant_identifier_names
 
 import 'package:cabmate_task/screens/payment/payment_success.dart';
 import 'package:cabmate_task/service/api_service.dart';
@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 enum PaymentType { GiftCard, Wallet, Payment }
 
@@ -277,9 +276,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                   // send mail
                   sendEmailWithGmailSMTP(widget.paymentData);
                 });
-              } else if (widget.paymentType == PaymentType.Payment) {
-                print("Pay");
-              }
+              } else if (widget.paymentType == PaymentType.Payment) {}
 
               // payment logic
               showCardDetailsBottomSheet(context);
@@ -337,10 +334,10 @@ class CardDetailsForm extends StatelessWidget {
         const SizedBox(height: 20),
         Container(
           height: 75,
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           width: double.infinity,
           decoration: BoxDecoration(
-            border: Border.all(color: Color(0xffc2c2c2)),
+            border: Border.all(color: const Color(0xffc2c2c2)),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Center(
@@ -360,10 +357,10 @@ class CardDetailsForm extends StatelessWidget {
             Expanded(
               child: Container(
                 height: 75,
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  border: Border.all(color: Color(0xffc2c2c2)),
+                  border: Border.all(color: const Color(0xffc2c2c2)),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Center(
@@ -382,10 +379,10 @@ class CardDetailsForm extends StatelessWidget {
             Expanded(
               child: Container(
                 height: 75,
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  border: Border.all(color: Color(0xffc2c2c2)),
+                  border: Border.all(color: const Color(0xffc2c2c2)),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Center(
@@ -405,14 +402,9 @@ class CardDetailsForm extends StatelessWidget {
         const SizedBox(height: 20),
         GestureDetector(
           onTap: () async {
-            final cardNumber = cardNumberController.text;
-            final expiryDate = expiryDateController.text;
-            final cvv = cvvController.text;
-
             // Initiate the payment
 
             var isSuccessful = await ApiService().payNow();
-            print(isSuccessful);
             if (isSuccessful) {
               if (type == PaymentType.GiftCard) {
                 Navigator.of(context).push(MaterialPageRoute(

@@ -7,9 +7,11 @@ class OtpScreen extends StatefulWidget {
   final String phone_number;
   final String otp;
 
+  // ignore: non_constant_identifier_names
   const OtpScreen({super.key, required this.phone_number, required this.otp});
 
   @override
+  // ignore: library_private_types_in_public_api
   _OtpScreenState createState() => _OtpScreenState();
 }
 

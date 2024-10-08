@@ -16,9 +16,9 @@ class _PublishRideScreenState extends State<PublishRideScreen> {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            toNavigate(context, PublishRideScreen1());
+            toNavigate(context, const PublishRideScreen1());
           },
-          child: Text("Search"),
+          child: const Text("Search"),
         ),
       ),
     );

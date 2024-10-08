@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 
 import 'email_registration.dart';
@@ -27,7 +29,6 @@ class _NameScreenState extends State<NameScreen> {
     } else {
       // Proceed with your action when fields are valid
       // For example, navigate to the next page
-      print("First Name: $firstName, Last Name: $lastName");
       return true;
     }
   }
@@ -37,14 +38,14 @@ class _NameScreenState extends State<NameScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Input Error'),
+        title: const Text('Input Error'),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
             },
-            child: Text('OK'),
+            child: const Text('OK'),
           ),
         ],
       ),
@@ -64,44 +65,44 @@ class _NameScreenState extends State<NameScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             // Handle back button press
           },
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "What's your name?",
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _firstNameController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'First Name',
                       border: UnderlineInputBorder(),
                     ),
                   ),
                 ),
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
                 Expanded(
                   child: TextField(
                     controller: _lastNameController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Last Name',
                       border: UnderlineInputBorder(),
                     ),
@@ -109,7 +110,7 @@ class _NameScreenState extends State<NameScreen> {
                 ),
               ],
             ),
-            Spacer(),
+            const Spacer(),
           ],
         ),
       ),
@@ -124,9 +125,8 @@ class _NameScreenState extends State<NameScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => EmailInputScreen(
-                          name: _firstNameController.text +
-                              " " +
-                              _lastNameController.text,
+                          name:
+                              "${_firstNameController.text} ${_lastNameController.text}",
                           phone: widget.phone,
                         )));
           }

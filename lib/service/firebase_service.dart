@@ -1,3 +1,6 @@
+// ignore_for_file: empty_catches
+
+import 'package:cabmate_task/utils/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -14,8 +17,7 @@ class FirebaseService {
         password: password,
       );
       return userCredential.user;
-    } on FirebaseAuthException catch (e) {
-      print('Sign Up Error: ${e.message}');
+    } on FirebaseAuthException {
       return null;
     }
   }
@@ -28,8 +30,7 @@ class FirebaseService {
         password: password,
       );
       return userCredential.user;
-    } on FirebaseAuthException catch (e) {
-      print('Sign In Error: ${e.message}');
+    } on FirebaseAuthException {
       return null;
     }
   }
@@ -38,35 +39,42 @@ class FirebaseService {
   Future<void> signOut() async {
     try {
       await _auth.signOut();
-    } catch (e) {
-      print('Sign Out Error: $e');
-    }
+    } catch (e) {}
   }
 
   // Create User in Firestore
-  Future<void> createUser(String uid, Map<String, dynamic> userData) async {
+  Future<void> createUser(String uid, UserModel userData) async {
     try {
-      await _firestore.collection('users').doc(uid).set(userData);
-    } catch (e) {
-      print('Create User Error: $e');
-    }
+      await _firestore.collection('users').doc(uid).set(userData.toJson());
+    } catch (e) {}
   }
 
   // Update User in Firestore
   Future<void> updateUser(String uid, Map<String, dynamic> updatedData) async {
     try {
       await _firestore.collection('users').doc(uid).update(updatedData);
-    } catch (e) {
-      print('Update User Error: $e');
-    }
+    } catch (e) {}
   }
 
   // Delete User from Firestore
   Future<void> deleteUser(String uid) async {
     try {
       await _firestore.collection('users').doc(uid).delete();
+    } catch (e) {}
+  }
+
+  // Fetch User from Firestore
+  Future<Map<String, dynamic>?> fetchUser(String uid) async {
+    try {
+      DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(uid).get();
+      if (userDoc.exists) {
+        return userDoc.data() as Map<String, dynamic>;
+      } else {
+        return null;
+      }
     } catch (e) {
-      print('Delete User Error: $e');
+      return null;
     }
   }
 }

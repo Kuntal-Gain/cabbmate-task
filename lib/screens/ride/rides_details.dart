@@ -5,6 +5,7 @@ class RideDetailsScreen extends StatefulWidget {
   const RideDetailsScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _RideDetailsScreenState createState() => _RideDetailsScreenState();
 }
 
@@ -31,7 +32,6 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context).size;
-    final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -393,15 +393,15 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
                       onPressed: () {
                         // Action for continue button
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (_) => BookingSummary()));
+                            builder: (_) => const BookingSummary()));
                       },
-                      child: const Text(
-                        'Continue',
-                        style: TextStyle(color: Colors.white),
-                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      ),
+                      child: const Text(
+                        'Continue',
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),

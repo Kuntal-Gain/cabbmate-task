@@ -1,6 +1,4 @@
-import 'package:cabmate_task/screens/credential/email_registration.dart';
 import 'package:cabmate_task/screens/credential/phonenumber_registration.dart';
-import 'package:cabmate_task/screens/credential/signup.dart';
 import 'package:cabmate_task/screens/homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen>
             return const HomePage();
           } else {
             // If no user, navigate to SignUpPage
-            return MobileNumberScreen();
+            return const MobileNumberScreen();
           }
         },
       ),

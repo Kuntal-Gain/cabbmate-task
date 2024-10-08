@@ -2,7 +2,10 @@ import 'package:cabmate_task/screens/payment/payment_method_screen.dart';
 import 'package:flutter/material.dart';
 
 class BookingSummary extends StatefulWidget {
+  const BookingSummary({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _BookingSummaryState createState() => _BookingSummaryState();
 }
 
@@ -38,7 +41,7 @@ class _BookingSummaryState extends State<BookingSummary> {
                   backgroundColor: Colors.blue.shade200,
                   radius: 40,
                   child: Padding(
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     child: Image.network(
                         'https://cdn-icons-png.flaticon.com/512/1828/1828640.png'),
                   ),
@@ -67,13 +70,13 @@ class _BookingSummaryState extends State<BookingSummary> {
                     Expanded(
                       child: Container(
                         height: 60,
-                        margin: EdgeInsets.all(10),
+                        margin: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           border: Border.all(color: Colors.black, width: 2),
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             'OK',
                             style: TextStyle(
@@ -87,13 +90,13 @@ class _BookingSummaryState extends State<BookingSummary> {
                     Expanded(
                       child: Container(
                         height: 60,
-                        margin: EdgeInsets.all(10),
+                        margin: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.blue,
                           // border: Border.all(color: Colors.black, width: 2),
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             'View Rides',
                             style: TextStyle(
@@ -118,7 +121,7 @@ class _BookingSummaryState extends State<BookingSummary> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         centerTitle: true,
-        title: Text(
+        title: const Text(
           'Booking Summary',
           style: TextStyle(color: Colors.white, fontSize: 19),
         ),
@@ -140,8 +143,8 @@ class _BookingSummaryState extends State<BookingSummary> {
                         fontWeight: FontWeight.w600),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
+                const Padding(
+                  padding: EdgeInsets.only(left: 8.0),
                   child: Text('Tue, 19th Sep 23 at 11:00 AM'),
                 ),
               ],
@@ -154,7 +157,7 @@ class _BookingSummaryState extends State<BookingSummary> {
             child: Container(
               width: 500,
               height: 180,
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                   border: Border.all(color: Colors.black12),
                   borderRadius: BorderRadius.circular(20),
@@ -177,7 +180,7 @@ class _BookingSummaryState extends State<BookingSummary> {
                         priceRow('1 Seat X \$${seatPrice.toStringAsFixed(2)}',
                             seatPrice, screenWidth),
                         SizedBox(height: screenHeight * 0.01),
-                        Divider(
+                        const Divider(
                           thickness: 1,
                           color: Colors.grey,
                         ),
@@ -195,7 +198,7 @@ class _BookingSummaryState extends State<BookingSummary> {
           ),
           SizedBox(height: screenHeight * 0.02),
           // Total Price
-          Spacer(),
+          const Spacer(),
 
           Container(
             color: Colors.white,
@@ -226,6 +229,7 @@ class _BookingSummaryState extends State<BookingSummary> {
                       ],
                     ),
                     Text(
+                      // ignore: unnecessary_brace_in_string_interps
                       "\$${totalPrice}",
                       style: TextStyle(
                         fontSize: screenWidth * 0.045,
@@ -241,7 +245,7 @@ class _BookingSummaryState extends State<BookingSummary> {
                     Navigator.of(context)
                         .push(
                       MaterialPageRoute(
-                        builder: (_) => PaymentMethodScreen(
+                        builder: (_) => const PaymentMethodScreen(
                           paymentType: PaymentType.Payment,
                           paymentData: "Car data",
                         ),
@@ -249,18 +253,19 @@ class _BookingSummaryState extends State<BookingSummary> {
                     )
                         .then((state) {
                       // logic to show dialog box
+                      // ignore: use_build_context_synchronously
                       showBookingDialog(context);
                     });
                   },
                   child: Container(
                     height: 60,
                     width: double.infinity,
-                    margin: EdgeInsets.all(12),
+                    margin: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.blue,
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         'Continue',
                         style: TextStyle(

@@ -2,12 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class HomeScreen extends StatefulWidget {
+class MapScreen extends StatefulWidget {
+  const MapScreen({super.key});
+
   @override
-  State<HomeScreen> createState() => HomeScreenState();
+  State<MapScreen> createState() => MapScreenState();
 }
 
-class HomeScreenState extends State<HomeScreen> {
+class MapScreenState extends State<MapScreen> {
   Completer<GoogleMapController> controller = Completer();
 
   static CameraPosition kGooglePlex = const CameraPosition(
@@ -66,8 +68,8 @@ class HomeScreenState extends State<HomeScreen> {
         actions: [
           ElevatedButton(
             onPressed: () {
-              controller.future.then((value) => value.animateCamera(
-                  CameraUpdate.newCameraPosition(kGooglePlex)));
+              controller.future.then((value) => value
+                  .animateCamera(CameraUpdate.newCameraPosition(kGooglePlex)));
             },
             child: const Text('Panipat'),
           ),
@@ -81,7 +83,8 @@ class HomeScreenState extends State<HomeScreen> {
               width: double.infinity, // Set the width of the container
               margin: const EdgeInsets.all(10.0), // Add some margin
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.blueAccent), // Add a border if needed
+                border: Border.all(
+                    color: Colors.blueAccent), // Add a border if needed
               ),
               child: GoogleMap(
                 markers: Set<Marker>.of(marker),
@@ -89,13 +92,13 @@ class HomeScreenState extends State<HomeScreen> {
                 onMapCreated: (GoogleMapController contoller) {
                   controller.complete(contoller);
                 },
-                initialCameraPosition: HomeScreenState.kGooglePlex,
+                initialCameraPosition: MapScreenState.kGooglePlex,
               ),
             ),
             // Add other widgets below the map if needed
             // Example:
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
               child: Text(
                 "Additional Content Below the Map",
                 style: TextStyle(fontSize: 16),
@@ -106,18 +109,14 @@ class HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await controller.future.then((value) =>
-              value.animateCamera(CameraUpdate.newCameraPosition(
-                const CameraPosition(
-                    target: LatLng(35.6762, 139.6503), zoom: 14.4746),
-              )));
+          await controller.future.then(
+              (value) => value.animateCamera(CameraUpdate.newCameraPosition(
+                    const CameraPosition(
+                        target: LatLng(35.6762, 139.6503), zoom: 14.4746),
+                  )));
         },
         child: const Icon(Icons.location_searching),
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(home: HomeScreen()));
 }

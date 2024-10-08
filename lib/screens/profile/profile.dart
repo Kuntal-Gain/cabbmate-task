@@ -4,6 +4,8 @@ import 'package:cabmate_task/screens/profile/notification_screen.dart';
 import 'package:cabmate_task/screens/profile/qa_screen.dart';
 
 import 'package:cabmate_task/screens/profile/verify_email_screen.dart';
+import 'package:cabmate_task/service/firebase_service.dart';
+import 'package:cabmate_task/utils/user.dart';
 import 'package:cabmate_task/widgets/profile_card_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +21,22 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   bool _isSwitched = false;
+  final uid = FirebaseAuth.instance.currentUser!.uid;
+  FirebaseService srv = FirebaseService();
+  late UserModel _user;
+
+  @override
+  void initState() {
+    super.initState();
+
+    srv.fetchUser(uid).then((userData) {
+      if (userData != null) {
+        setState(() {
+          _user = UserModel.fromJson(userData); // Converting Map to User object
+        });
+      } else {}
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,9 +91,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Emma Brown',
-                                style: TextStyle(
+                              Text(
+                                _user.name,
+                                style: const TextStyle(
                                   fontSize: 26,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
@@ -83,9 +101,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               Row(
                                 children: [
-                                  const Text(
-                                    'emma_brown@demo.com',
-                                    style: TextStyle(
+                                  Text(
+                                    _user.email,
+                                    style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -107,9 +125,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ))
                                 ],
                               ),
-                              const Text(
-                                '(+1)2586543578',
-                                style: TextStyle(
+                              Text(
+                                _user.number,
+                                style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
@@ -137,12 +155,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     child: Column(
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.all(12.0),
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
+                              const Text(
                                 'Wallet Balance',
                                 style: TextStyle(
                                   fontSize: 22,
@@ -151,8 +169,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                               ),
                               Text(
-                                '\$0.0',
-                                style: TextStyle(
+                                '\$${_user.wallet}',
+                                style: const TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.blue,
@@ -213,8 +231,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             profileCardTile(Colors.brown, "About You", Icons.person),
             GestureDetector(
-              onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => NotificationScreen())),
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => const NotificationScreen())),
               child: profileCardTile(
                   Colors.deepPurple, "Notifications", Icons.notifications),
             ),

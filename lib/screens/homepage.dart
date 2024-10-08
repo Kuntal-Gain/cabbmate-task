@@ -1,12 +1,10 @@
-import 'package:cabmate_task/Rides_RideDetails/my_ride_selection.dart';
-import 'package:cabmate_task/screens/payment/payment_demo.dart';
 import 'package:cabmate_task/screens/profile/profile.dart';
-import 'package:cabmate_task/screens/ride/publish_ride.dart';
-import 'package:cabmate_task/screens/ride/publish_ride_2.dart';
+import 'package:cabmate_task/screens/ride/publish_ride_1.dart';
 import 'package:cabmate_task/screens/ride/search_rides.dart';
-import 'package:cabmate_task/screens/ride/trip_screen.dart';
 import 'package:cabmate_task/service/notification_service.dart';
 import 'package:flutter/material.dart';
+
+import 'ride/my_rides.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,8 +26,8 @@ class _HomepageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> screens = [
-      SearchRides(),
-      MyRidesScreen(),
+      const SearchRides(),
+      const PublishRideScreen1(),
       MyRidesScreen(),
       const ProfileScreen(),
     ];

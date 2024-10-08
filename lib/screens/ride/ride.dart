@@ -10,23 +10,23 @@ class RidesScreen extends StatelessWidget {
     final deviceWidth = MediaQuery.of(context).size.width;
 
     // Store the values in variables for easy reference
-    final cardElevation = 3.0;
-    final cardMargin = EdgeInsets.symmetric(vertical: 8.0);
-    final borderRadiusValue = 20.0;
+    const cardElevation = 3.0;
+    const cardMargin = EdgeInsets.symmetric(vertical: 8.0);
+    const borderRadiusValue = 20.0;
     final boxShadowColor = Colors.grey.shade200;
-    final boxShadowSpreadRadius = 3.0;
-    final boxShadowBlurRadius = 3.0;
-    final containerMargin = EdgeInsets.only(left: 10, right: 10, bottom: 12);
-    final cardPadding = EdgeInsets.all(5.0);
+    const boxShadowSpreadRadius = 3.0;
+    const boxShadowBlurRadius = 3.0;
+    const containerMargin = EdgeInsets.only(left: 10, right: 10, bottom: 12);
+    const cardPadding = EdgeInsets.all(5.0);
     final imageSize = deviceWidth * 0.12; // Responsive image size
-    final imageRadius = 20.0;
-    final fontSizeName = 16.0;
-    final fontSizeRideNo = 15.0;
+    const imageRadius = 20.0;
+    const fontSizeName = 16.0;
+    const fontSizeRideNo = 15.0;
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: Text(
+        title: const Text(
           'Rides',
           style: TextStyle(
             color: Colors.white,
@@ -36,7 +36,7 @@ class RidesScreen extends StatelessWidget {
         centerTitle: true,
         leading: IconButton(
             onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back_ios,
               color: Colors.white,
             )),
@@ -122,7 +122,7 @@ class RidesScreen extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => RideDetailsScreen(),
+            builder: (_) => const RideDetailsScreen(),
           ),
         );
       },
@@ -176,7 +176,7 @@ class RidesScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -205,7 +205,7 @@ class RidesScreen extends StatelessWidget {
                   children: [
                     Text(
                       date,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                       ),
                     ),
@@ -214,13 +214,13 @@ class RidesScreen extends StatelessWidget {
                       children: [
                         Text(
                           '\$$fare',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.blue,
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 130.0),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 130.0),
                           child: Text(
                             'Per Passenger',
                             style: TextStyle(
@@ -245,32 +245,32 @@ class RidesScreen extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(Icons.location_on, color: Colors.green),
-        SizedBox(width: 8),
+        const Icon(Icons.location_on, color: Colors.green),
+        const SizedBox(width: 8),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 label,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
               ),
               Text(
                 location,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.grey,
                 ),
               ),
             ],
           ),
         ),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         Text(
           time,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.blue,
           ),

@@ -5,6 +5,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart'; // Add this import to use geocoding for converting addresses to LatLng
 
 class GoogleMapScreen extends StatefulWidget {
+  const GoogleMapScreen({super.key});
+
   @override
   State<GoogleMapScreen> createState() => _GoogleMapScreenState();
 }
@@ -55,7 +57,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
       // Add markers for source and destination
       setState(() {
         markers.add(Marker(
-          markerId: MarkerId('source'),
+          markerId: const MarkerId('source'),
           position: startLatLng,
           infoWindow: InfoWindow(
             title: 'Source Location',
@@ -64,7 +66,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
         ));
 
         markers.add(Marker(
-          markerId: MarkerId('destination'),
+          markerId: const MarkerId('destination'),
           position: endLatLng,
           infoWindow: InfoWindow(
             title: 'Destination Location',
@@ -74,7 +76,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
 
         // Add a polyline between source and destination
         polylines.add(Polyline(
-          polylineId: PolylineId('route'),
+          polylineId: const PolylineId('route'),
           points: [startLatLng, endLatLng],
           color: Colors.blue,
           width: 5,
@@ -103,7 +105,6 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
         50.0, // padding
       ));
     } catch (e) {
-      print("Error: $e");
       // Show error if geocoding fails
       Get.snackbar('Error', 'Failed to get location for the provided address');
     }
@@ -191,7 +192,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                                 _GoogleMapScreenState.kGooglePlex,
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         ElevatedButton(
                           onPressed: _drawRoute,
                           style: ElevatedButton.styleFrom(
@@ -201,7 +202,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
                         Positioned(
                           top: 400,
                           child: Container(
@@ -254,12 +255,11 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                  setState(() {
-                    var temp=sourceController.text.toString();
-                    sourceController.text=destinationController.text;
-                    destinationController.text=temp.toString();
-                  });
-
+                        setState(() {
+                          var temp = sourceController.text.toString();
+                          sourceController.text = destinationController.text;
+                          destinationController.text = temp.toString();
+                        });
 
                         // Handle the button press here.
                       },
@@ -292,7 +292,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
 }
 
 void main() {
-  runApp(GetMaterialApp(
+  runApp(const GetMaterialApp(
     debugShowCheckedModeBanner: false,
     home: GoogleMapScreen(),
   ));

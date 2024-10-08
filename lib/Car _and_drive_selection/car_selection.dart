@@ -1,8 +1,13 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class RideDetailsPage extends StatefulWidget {
+  const RideDetailsPage({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _RideDetailsPageState createState() => _RideDetailsPageState();
 }
 
@@ -29,12 +34,12 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue, // Set the app bar color
-        title: Text(
+        title: const Text(
           'Ride Details',
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        actions: [Icon(Icons.phone_enabled)],
+        actions: const [Icon(Icons.phone_enabled)],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(
@@ -55,10 +60,10 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
               height: 300,
               decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade300),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.white,
-                      offset: const Offset(
+                      offset: Offset(
                         5.0,
                         5.0,
                       ),
@@ -94,7 +99,7 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
                       Padding(
                         padding: const EdgeInsets.only(left: 13.0),
                         child: Text(
-                          '$carBrand',
+                          carBrand,
                           style: TextStyle(
                             fontSize: screenWidth *
                                 0.045, // Font size based on screen width
@@ -103,8 +108,8 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
                       ),
                       Row(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
+                          const Padding(
+                            padding: EdgeInsets.only(left: 8.0),
                             child: Icon(
                               Icons.car_rental,
                               color: Colors.grey,
@@ -113,7 +118,7 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
                           Padding(
                             padding: const EdgeInsets.only(left: 8.0),
                             child: Text(
-                              '$carModel',
+                              carModel,
                               style: TextStyle(
                                   fontSize: screenWidth *
                                       0.045, // Font size based on screen width
@@ -124,8 +129,8 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
                       ),
                       Row(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
+                          const Padding(
+                            padding: EdgeInsets.only(left: 8.0),
                             child: Icon(
                               Icons.card_travel_rounded,
                               color: Colors.grey,
@@ -134,7 +139,7 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
                           Padding(
                             padding: const EdgeInsets.only(left: 8.0),
                             child: Text(
-                              '$car_number',
+                              car_number,
                               style: TextStyle(
                                   fontSize: screenWidth *
                                       0.045, // Font size based on screen width
@@ -161,7 +166,7 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         "Total Price",
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
@@ -175,8 +180,8 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
                   ),
                 ),
                 Text(
-                  "$price",
-                  style: TextStyle(color: Colors.blue),
+                  price,
+                  style: const TextStyle(color: Colors.blue),
                 )
               ],
             ),
@@ -188,16 +193,16 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
                 onPressed: () {
                   Get.snackbar("Continue", "Proceeding to the next step");
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  minimumSize: Size(double.infinity, screenHeight * 0.07),
+                ),
                 child: Text(
                   'Continue',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: screenWidth * 0.045,
                   ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  minimumSize: Size(double.infinity, screenHeight * 0.07),
                 ),
               ),
             ),

@@ -11,7 +11,6 @@ class SearchRides extends StatefulWidget {
 class _SearchRidesState extends State<SearchRides> {
   final _srcController = TextEditingController();
   final _destController = TextEditingController();
-  final _personController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -56,16 +55,16 @@ class _SearchRidesState extends State<SearchRides> {
             Expanded(
               child: Container(
                 width: double.infinity,
-                margin: EdgeInsets.all(12),
+                margin: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  border: Border.all(color: Color(0xffc2c2c2)),
+                  border: Border.all(color: const Color(0xffc2c2c2)),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Container(
                   width: MediaQuery.of(context).size.width *
                       0.9, // Adjust based on screen width
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(color: Colors.grey),
@@ -91,7 +90,7 @@ class _SearchRidesState extends State<SearchRides> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10),
                               height: 50,
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Colors.white,
                               ),
                               child: TextFormField(
@@ -132,16 +131,16 @@ class _SearchRidesState extends State<SearchRides> {
                               onTap: () {
                                 // _showCalendar(context); // Calendar picker
                               },
-                              child: Icon(Icons.calendar_today),
+                              child: const Icon(Icons.calendar_today),
                             ),
                           ),
                         ),
                       ),
                       // Person selector label
-                      Padding(
-                        padding: const EdgeInsets.only(left: 18.0, top: 10),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 18.0, top: 10),
                         child: Row(
-                          children: const [
+                          children: [
                             Text(
                               "Person",
                               style: TextStyle(
@@ -157,9 +156,9 @@ class _SearchRidesState extends State<SearchRides> {
                         child: Container(
                           width: MediaQuery.of(context).size.width *
                               0.8, // Adjust based on screen size
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: const BoxDecoration(
                             color: Colors.white,
                           ),
                           child: DropdownButton<int>(
@@ -194,7 +193,8 @@ class _SearchRidesState extends State<SearchRides> {
                       // Search button
                       GestureDetector(
                         onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => RidesScreen())),
+                            MaterialPageRoute(
+                                builder: (_) => const RidesScreen())),
                         child: Container(
                           height: 60,
                           width: MediaQuery.of(context).size.width * 0.9,
@@ -202,7 +202,7 @@ class _SearchRidesState extends State<SearchRides> {
                             color: Colors.blue,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Center(
+                          child: const Center(
                             child: Text(
                               'Search',
                               style: TextStyle(
@@ -252,7 +252,7 @@ class _SearchRidesState extends State<SearchRides> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 height: 50,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white,
                 ),
                 child: TextFormField(
@@ -287,7 +287,7 @@ class _SearchRidesState extends State<SearchRides> {
                 );
               }),
             ),
-            Expanded(
+            const Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12),
                 child: Divider(),

@@ -47,11 +47,7 @@ class ApiService {
     }
 
     if (response.statusCode == 201) {
-      print('Message sent successfully');
-    } else {
-      print(
-          'Failed to send message: ${response.statusCode} - ${response.body}');
-    }
+    } else {}
   }
 
   // Generate PayU hash using SHA-512
@@ -64,7 +60,7 @@ class ApiService {
 
   // Verify Payment method using PayU's POST service
   Future<void> verifyPayUPayment(String transactionId) async {
-    final command = 'verify_payment';
+    const command = 'verify_payment';
     final hash = generatePayUHash(payuMerchantKey, command, transactionId);
 
     final url = Uri.parse('$payuBaseUrl/merchant/postservice?form=2');
@@ -88,16 +84,12 @@ class ApiService {
     }
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      print('Payment verification successful.');
-    } else {
-      print(
-          'Payment verification failed: ${response.statusCode} - ${response.body}');
-    }
+    } else {}
   }
 
   // Example of another PayU command: refund transaction
   Future<void> refundPayUTransaction(String transactionId) async {
-    final command = 'refund_transaction';
+    const command = 'refund_transaction';
     final hash = generatePayUHash(payuMerchantKey, command, transactionId);
 
     final url = Uri.parse('$payuBaseUrl/merchant/postservice?form=2');
@@ -121,31 +113,27 @@ class ApiService {
     }
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      print('Refund initiated successfully.');
-    } else {
-      print(
-          'Refund initiation failed: ${response.statusCode} - ${response.body}');
-    }
+    } else {}
   }
 
   // Pay Now method
   Future<bool> payNow() async {
     // Payment details
-    final String transactionId = 'txnid132735124320';
-    final String amount = '10.00';
-    final String firstName = 'Ashish';
-    final String email = 'test@gmail.com';
-    final String phone = '9876543210';
-    final String productInfo = 'iPhone';
-    final String pg = 'TESTPG';
-    final String bankCode = 'TESTPGNB';
-    final String surl =
+    const String transactionId = 'txnid132735124320';
+    const String amount = '10.00';
+    const String firstName = 'Ashish';
+    const String email = 'test@gmail.com';
+    const String phone = '9876543210';
+    const String productInfo = 'iPhone';
+    const String pg = 'TESTPG';
+    const String bankCode = 'TESTPGNB';
+    const String surl =
         'https://test-payment-middleware.payu.in/simulatorResponse';
-    final String furl =
+    const String furl =
         'https://test-payment-middleware.payu.in/simulatorResponse';
 
     // Use the command 'payment' for the payment process
-    final String command = 'payment';
+    const String command = 'payment';
 
     // Generate the hash using the provided method
     final String hash = generatePayUHash(
@@ -177,7 +165,6 @@ class ApiService {
       },
     );
 
-    print(response.statusCode);
     // Handle the response
     if (response.statusCode == 200) {
       return true;

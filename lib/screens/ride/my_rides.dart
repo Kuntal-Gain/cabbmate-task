@@ -1,7 +1,10 @@
+// ignore_for_file: use_key_in_widget_constructors
+
 import 'package:flutter/material.dart';
 
 class MyRidesScreen extends StatefulWidget {
   @override
+  // ignore: library_private_types_in_public_api
   _MyRidesScreenState createState() => _MyRidesScreenState();
 }
 
@@ -47,9 +50,9 @@ class _MyRidesScreenState extends State<MyRidesScreen>
         bottom: TabBar(
           indicatorColor: Colors.black,
           indicatorSize: TabBarIndicatorSize.tab,
-          labelStyle: TextStyle(color: Colors.black),
+          labelStyle: const TextStyle(color: Colors.black),
           controller: _tabController,
-          tabs: [
+          tabs: const [
             Tab(text: 'Published Ride'),
             Tab(text: 'Booked Ride'),
           ],
@@ -88,7 +91,7 @@ class _MyRidesScreenState extends State<MyRidesScreen>
     return SingleChildScrollView(
       child: Container(
         height: 500,
-        margin: EdgeInsets.only(top: 6, left: 4, right: 4),
+        margin: const EdgeInsets.only(top: 6, left: 4, right: 4),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -101,9 +104,9 @@ class _MyRidesScreenState extends State<MyRidesScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(),
+                  const SizedBox(),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
                     margin: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(14),
@@ -130,14 +133,14 @@ class _MyRidesScreenState extends State<MyRidesScreen>
               ),
               Container(
                 height: MediaQuery.of(context).size.height * 0.7,
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade200,
                 ),
                 child: Column(
                   children: [
                     Text(bookingNo,
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(height: mediaQuery.height * 0.02),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -146,7 +149,7 @@ class _MyRidesScreenState extends State<MyRidesScreen>
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(35),
-                            child: Container(
+                            child: SizedBox(
                               width: 60,
                               height: 60,
                               child: Image.network(
@@ -189,19 +192,19 @@ class _MyRidesScreenState extends State<MyRidesScreen>
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Start Location",
+                            const Text("Start Location",
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold)),
                             Padding(
                               padding: const EdgeInsets.only(right: 28.0),
                               child: Text(startLocation,
-                                  style: TextStyle(color: Colors.grey)),
+                                  style: const TextStyle(color: Colors.grey)),
                             ),
                           ],
                         ),
                         Text(startTime,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold)),
                       ],
@@ -213,24 +216,24 @@ class _MyRidesScreenState extends State<MyRidesScreen>
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("End Location",
+                            const Text("End Location",
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold)),
                             Text(endLocation,
-                                style: TextStyle(color: Colors.grey)),
+                                style: const TextStyle(color: Colors.grey)),
                           ],
                         ),
                         Text(endTime,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold)),
                       ],
                     ),
-                    Spacer(),
+                    const Spacer(),
                     SizedBox(height: mediaQuery.height * 0.02),
                     Center(
-                      child: Container(
+                      child: SizedBox(
                         width: 210,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -243,7 +246,7 @@ class _MyRidesScreenState extends State<MyRidesScreen>
                         ),
                       ),
                     ),
-                    Container(
+                    SizedBox(
                       width: 350,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -252,7 +255,7 @@ class _MyRidesScreenState extends State<MyRidesScreen>
                           Padding(
                             padding: const EdgeInsets.only(left: 12.0),
                             child: Text(date,
-                                style: TextStyle(color: Colors.black)),
+                                style: const TextStyle(color: Colors.black)),
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
@@ -266,7 +269,7 @@ class _MyRidesScreenState extends State<MyRidesScreen>
                                         fontSize: mediaQuery.width * 0.045)),
                               ),
                               Text(perPassenger,
-                                  style: TextStyle(color: Colors.grey)),
+                                  style: const TextStyle(color: Colors.grey)),
                             ],
                           ),
                         ],
@@ -299,7 +302,7 @@ class _MyRidesScreenState extends State<MyRidesScreen>
     return SingleChildScrollView(
       child: Container(
         height: 500,
-        margin: EdgeInsets.only(top: 6, left: 4, right: 4),
+        margin: const EdgeInsets.only(top: 6, left: 4, right: 4),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -327,7 +330,8 @@ class _MyRidesScreenState extends State<MyRidesScreen>
                   },
                 ),
               ),
-              Text(bookingNo, style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(bookingNo,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
               SizedBox(height: mediaQuery.height * 0.02),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -336,7 +340,7 @@ class _MyRidesScreenState extends State<MyRidesScreen>
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(35),
-                      child: Container(
+                      child: SizedBox(
                         width: 60,
                         height: 60,
                         child: Image.network(
@@ -381,19 +385,19 @@ class _MyRidesScreenState extends State<MyRidesScreen>
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Start Location",
+                        const Text("Start Location",
                             style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold)),
                         Padding(
                           padding: const EdgeInsets.only(right: 28.0),
                           child: Text(startLocation,
-                              style: TextStyle(color: Colors.grey)),
+                              style: const TextStyle(color: Colors.grey)),
                         ),
                       ],
                     ),
                     Text(startTime,
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold)),
                   ],
                 ),
@@ -407,23 +411,24 @@ class _MyRidesScreenState extends State<MyRidesScreen>
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("End Location",
+                        const Text("End Location",
                             style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold)),
-                        Text(endLocation, style: TextStyle(color: Colors.grey)),
+                        Text(endLocation,
+                            style: const TextStyle(color: Colors.grey)),
                       ],
                     ),
                     Text(endTime,
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               SizedBox(height: mediaQuery.height * 0.02),
               Center(
-                child: Container(
+                child: SizedBox(
                   width: 210,
                   child: ElevatedButton(
                     style:
@@ -436,7 +441,7 @@ class _MyRidesScreenState extends State<MyRidesScreen>
                   ),
                 ),
               ),
-              Container(
+              SizedBox(
                 width: 350,
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -446,8 +451,8 @@ class _MyRidesScreenState extends State<MyRidesScreen>
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 12.0),
-                        child:
-                            Text(date, style: TextStyle(color: Colors.black)),
+                        child: Text(date,
+                            style: const TextStyle(color: Colors.black)),
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -461,7 +466,7 @@ class _MyRidesScreenState extends State<MyRidesScreen>
                                     fontSize: mediaQuery.width * 0.045)),
                           ),
                           Text(perPassenger,
-                              style: TextStyle(color: Colors.grey)),
+                              style: const TextStyle(color: Colors.grey)),
                         ],
                       ),
                     ],

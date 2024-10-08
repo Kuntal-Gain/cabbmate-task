@@ -16,7 +16,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     notifications = [
       NotificationModel(
@@ -38,13 +37,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
           backgroundColor: Colors.blue,
           leading: IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back_ios,
               color: Colors.white,
             ),
           ),
           centerTitle: true,
-          title: Text(
+          title: const Text(
             'Notifications',
             style: TextStyle(
               color: Colors.white,
@@ -55,7 +54,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         body: Column(
           children: [
             // TabBar inside the body
-            TabBar(
+            const TabBar(
               labelColor: Colors.blue,
               unselectedLabelColor: Colors.grey,
               indicatorColor: Colors.blue,
@@ -90,7 +89,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
 Widget notificationCard(List<NotificationModel> notifications) {
   return notifications.isEmpty
-      ? Column(
+      ? const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
@@ -116,13 +115,13 @@ Widget notificationCard(List<NotificationModel> notifications) {
 
             return Container(
               width: double.infinity,
-              margin: EdgeInsets.all(12),
+              margin: const EdgeInsets.all(12),
               height: 150,
-              padding: EdgeInsets.all(18),
+              padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Color(0xffc2c2c2)),
+                border: Border.all(color: const Color(0xffc2c2c2)),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -130,7 +129,7 @@ Widget notificationCard(List<NotificationModel> notifications) {
                 children: [
                   Text(
                     notif.label,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -146,7 +145,7 @@ Widget notificationCard(List<NotificationModel> notifications) {
                     children: [
                       Text(
                         notif.createAt,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -158,7 +157,7 @@ Widget notificationCard(List<NotificationModel> notifications) {
                           color: Colors.blue,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Center(
+                        child: const Center(
                             child: Text(
                           'Read More',
                           style: TextStyle(

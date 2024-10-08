@@ -4,6 +4,8 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
 class SearchRide extends StatefulWidget {
+  const SearchRide({super.key});
+
   @override
   State<SearchRide> createState() => _SearchRideState();
 }
@@ -45,7 +47,7 @@ class _SearchRideState extends State<SearchRide> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return SingleChildScrollView(
-      child: Container(
+      child: SizedBox(
         width: screenWidth, // Use full screen width
         height: screenHeight, // Use full screen height
         child: Stack(
@@ -62,8 +64,8 @@ class _SearchRideState extends State<SearchRide> {
               ),
             ),
             // Header text
-            Padding(
-              padding: const EdgeInsets.only(top: 28.0),
+            const Padding(
+              padding: EdgeInsets.only(top: 28.0),
               child: Center(
                 child: Text(
                   "Find and Book Rides at\nLow Prices",
@@ -80,7 +82,7 @@ class _SearchRideState extends State<SearchRide> {
               child: Container(
                 width:
                     screenWidth * 0.9, // Set dynamically based on screen size
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border.all(color: Colors.grey),
@@ -146,17 +148,17 @@ class _SearchRideState extends State<SearchRide> {
                               onTap: () {
                                 _showCalendar(context);
                               },
-                              child: Icon(Icons.calendar_today),
+                              child: const Icon(Icons.calendar_today),
                             ),
                           ),
                         ),
                       ),
                     ),
                     // Person selector
-                    Padding(
-                      padding: const EdgeInsets.only(left: 18.0, top: 10),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 18.0, top: 10),
                       child: Row(
-                        children: const [
+                        children: [
                           Text(
                             "Person",
                             style: TextStyle(
@@ -171,8 +173,8 @@ class _SearchRideState extends State<SearchRide> {
                     Center(
                       child: Container(
                         width: screenWidth * 0.8, // Adjust based on screen size
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
@@ -213,7 +215,7 @@ class _SearchRideState extends State<SearchRide> {
                     ),
                     const SizedBox(height: 10),
                     // Search button
-                    Container(
+                    SizedBox(
                       width: screenWidth * 0.8, // Adjust based on screen size
                       child: ElevatedButton(
                         onPressed: () {
