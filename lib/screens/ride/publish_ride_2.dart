@@ -7,7 +7,11 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
 class PublishRideScreen2 extends StatefulWidget {
-  const PublishRideScreen2({super.key});
+  const PublishRideScreen2(
+      {super.key, required this.source, required this.destination});
+
+  final String source;
+  final String destination;
 
   @override
   State<PublishRideScreen2> createState() => _PublishRideScreen2State();
@@ -18,22 +22,41 @@ class _PublishRideScreen2State extends State<PublishRideScreen2> {
   LatLng _currentPosition = const LatLng(0, 0);
   bool _isLoading = true;
   int selectedIdx = 1;
+  List<String> stops = [];
 
   // Markers
   final Set<Marker> _markers = {};
   LatLng? _srcMarker, _stop1Marker, _stop2Marker, _destMarker;
 
   // Controllers
-  final _srcController = TextEditingController();
-  final _stop1Controller = TextEditingController();
-  final _stop2Controller = TextEditingController();
-  final _destController = TextEditingController();
+  late TextEditingController _srcController;
+  late TextEditingController _stop1Controller;
+  late TextEditingController _stop2Controller;
+  late TextEditingController _destController;
 
   @override
   void initState() {
     super.initState();
+
+    _srcController = TextEditingController(text: widget.source);
+    _stop1Controller = TextEditingController();
+    _stop2Controller = TextEditingController();
+    _destController = TextEditingController(text: widget.destination);
+
     WidgetsFlutterBinding.ensureInitialized();
     _getCurrentLocation();
+  }
+
+  Future<LatLng?> _getLatLngFromAddress(String address) async {
+    try {
+      List<Location> locations = await locationFromAddress(address);
+      if (locations.isNotEmpty) {
+        return LatLng(locations.first.latitude, locations.first.longitude);
+      }
+    } catch (e) {
+      print('Error occurred while converting address: $e');
+    }
+    return null;
   }
 
   Future<void> _getCurrentLocation() async {
@@ -57,15 +80,45 @@ class _PublishRideScreen2State extends State<PublishRideScreen2> {
       return;
     }
 
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
+    // Convert source and destination addresses to LatLng
+    LatLng? srcPosition = await _getLatLngFromAddress(widget.source);
+    LatLng? destPosition = await _getLatLngFromAddress(widget.destination);
 
-    setState(() {
-      _currentPosition = LatLng(position.latitude, position.longitude);
-      _isLoading = false;
-      _moveCamera();
-    });
+    // If we have valid positions for both source and destination, set the markers
+    if (srcPosition != null && destPosition != null) {
+      setState(() {
+        _srcMarker = srcPosition;
+        _destMarker = destPosition;
+
+        _markers.add(Marker(
+          markerId: const MarkerId('source'),
+          position: _srcMarker!,
+          infoWindow: InfoWindow(title: 'Source', snippet: widget.source),
+        ));
+
+        _markers.add(Marker(
+          markerId: const MarkerId('destination'),
+          position: _destMarker!,
+          infoWindow:
+              InfoWindow(title: 'Destination', snippet: widget.destination),
+        ));
+
+        _currentPosition = srcPosition; // Center the map on the source
+        _isLoading = false;
+        _moveCamera(); // Move the camera to the source
+      });
+    } else {
+      // Fallback to current location if source/destination cannot be geocoded
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      setState(() {
+        _currentPosition = LatLng(position.latitude, position.longitude);
+        _isLoading = false;
+        _moveCamera();
+      });
+    }
   }
 
   Future<String> getAddressFromLatLng(LatLng position) async {
@@ -98,7 +151,8 @@ class _PublishRideScreen2State extends State<PublishRideScreen2> {
       _mapController!.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
-            target: _currentPosition,
+            target: _srcMarker ??
+                _currentPosition, // Center on the source if available
             zoom: 14.0,
           ),
         ),
@@ -119,6 +173,7 @@ class _PublishRideScreen2State extends State<PublishRideScreen2> {
             infoWindow: InfoWindow(title: 'Source', snippet: address),
           ));
           _srcController.text = address;
+          stops.add(address);
           break;
         case 1: // Stop 1
           _stop1Marker = tappedPoint;
@@ -128,6 +183,7 @@ class _PublishRideScreen2State extends State<PublishRideScreen2> {
             infoWindow: InfoWindow(title: 'Stop 1', snippet: address),
           ));
           _stop1Controller.text = address;
+          stops.add(address);
           break;
         case 2: // Stop 2
           _stop2Marker = tappedPoint;
@@ -137,6 +193,7 @@ class _PublishRideScreen2State extends State<PublishRideScreen2> {
             infoWindow: InfoWindow(title: 'Stop 2', snippet: address),
           ));
           _stop2Controller.text = address;
+          stops.add(address);
           break;
         case 3: // Destination
           _destMarker = tappedPoint;
@@ -146,6 +203,7 @@ class _PublishRideScreen2State extends State<PublishRideScreen2> {
             infoWindow: InfoWindow(title: 'Destination', snippet: address),
           ));
           _destController.text = address;
+          stops.add(address);
           break;
       }
     });
@@ -314,7 +372,8 @@ class _PublishRideScreen2State extends State<PublishRideScreen2> {
                         child: IconButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (_) => const PublishRideScreen3()));
+                                  builder: (_) =>
+                                      PublishRideScreen3(stops: stops)));
                             },
                             icon: const Icon(Icons.arrow_forward)),
                       )

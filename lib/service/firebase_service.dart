@@ -4,9 +4,12 @@ import 'package:cabmate_task/utils/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/ride.dart';
+
 class FirebaseService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final String collectionPath = 'rides';
 
   // Sign Up Method
   Future<User?> signUp(String email, String password) async {
@@ -75,6 +78,73 @@ class FirebaseService {
       }
     } catch (e) {
       return null;
+    }
+  }
+
+  // Add a new Ride
+  Future<void> addRide(Ride ride) async {
+    try {
+      await _firestore
+          .collection(collectionPath)
+          .doc(ride.rideId)
+          .set(ride.toJson());
+      print("Ride added successfully");
+    } catch (e) {
+      print("Error adding ride: $e");
+    }
+  }
+
+  // Delete a Ride by ID
+  Future<void> deleteRide(String rideId) async {
+    try {
+      await _firestore.collection(collectionPath).doc(rideId).delete();
+      print("Ride deleted successfully");
+    } catch (e) {
+      print("Error deleting ride: $e");
+    }
+  }
+
+  // Fetch a single Ride by ID
+  Future<Ride?> getRideById(String rideId) async {
+    try {
+      DocumentSnapshot rideDoc =
+          await _firestore.collection(collectionPath).doc(rideId).get();
+      if (rideDoc.exists) {
+        return Ride.fromJson(rideDoc.data() as Map<String, dynamic>);
+      } else {
+        print("Ride not found");
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching ride: $e");
+      return null;
+    }
+  }
+
+  // Fetch all rides
+  Future<List<Ride>> getAllRides() async {
+    try {
+      QuerySnapshot snapshot =
+          await _firestore.collection(collectionPath).get();
+      return snapshot.docs
+          .map((doc) => Ride.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      print("Error fetching rides: $e");
+      return [];
+    }
+  }
+
+  // Update a ride (by providing updated Ride object)
+  Future<void> updateRide(Ride ride) async {
+    try {
+      await _firestore
+          .collection(collectionPath)
+          .doc(ride.rideId)
+          .update(ride.toJson());
+      print("Ride updated successfully");
+    } catch (e) {
+      print("Error updating ride: $e");
     }
   }
 }

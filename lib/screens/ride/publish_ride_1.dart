@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:cabmate_task/screens/ride/publish_ride_2.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -21,12 +19,10 @@ class _PublishRideScreen1State extends State<PublishRideScreen1> {
 
   // Markers
   final Set<Marker> _markers = {};
-  LatLng? _srcMarker, _stop1Marker, _stop2Marker, _destMarker;
+  LatLng? _srcMarker, _destMarker;
 
   // Controllers
   final _srcController = TextEditingController();
-  final _stop1Controller = TextEditingController();
-  final _stop2Controller = TextEditingController();
   final _destController = TextEditingController();
 
   @override
@@ -120,25 +116,8 @@ class _PublishRideScreen1State extends State<PublishRideScreen1> {
           ));
           _srcController.text = address;
           break;
-        case 1: // Stop 1
-          _stop1Marker = tappedPoint;
-          _markers.add(Marker(
-            markerId: const MarkerId('stop1'),
-            position: _stop1Marker!,
-            infoWindow: InfoWindow(title: 'Stop 1', snippet: address),
-          ));
-          _stop1Controller.text = address;
-          break;
-        case 2: // Stop 2
-          _stop2Marker = tappedPoint;
-          _markers.add(Marker(
-            markerId: const MarkerId('stop2'),
-            position: _stop2Marker!,
-            infoWindow: InfoWindow(title: 'Stop 2', snippet: address),
-          ));
-          _stop2Controller.text = address;
-          break;
-        case 3: // Destination
+
+        case 1: // Destination
           _destMarker = tappedPoint;
           _markers.add(Marker(
             markerId: const MarkerId('destination'),
@@ -149,6 +128,49 @@ class _PublishRideScreen1State extends State<PublishRideScreen1> {
           break;
       }
     });
+  }
+
+  Future<void> _onSubmit(String input, bool isSource) async {
+    try {
+      // Get LatLng from address input
+      List<Location> locations = await locationFromAddress(input);
+
+      if (locations.isNotEmpty) {
+        LatLng tappedPoint =
+            LatLng(locations[0].latitude, locations[0].longitude);
+
+        // Add marker based on whether it's source or destination
+        if (isSource) {
+          _addMarker(tappedPoint, 0);
+        } else {
+          _addMarker(tappedPoint, 1);
+        }
+
+        // Move camera to this location
+        _mapController?.animateCamera(CameraUpdate.newLatLng(tappedPoint));
+      } else {
+        throw Exception('No locations found for the input address.');
+      }
+    } catch (e) {
+      print('Failed to get location from address: $e');
+
+      // Handle timeout or other errors by showing an alert or default fallback
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: Text('Failed to get location from address: $e'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -168,7 +190,8 @@ class _PublishRideScreen1State extends State<PublishRideScreen1> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _buildDottedStoppage(Colors.green, true, _srcController),
+                      _buildDottedStoppage(Colors.green, true, _srcController,
+                          (value) => _onSubmit(value, true)),
                       Row(
                         children: [
                           Container(
@@ -193,6 +216,8 @@ class _PublishRideScreen1State extends State<PublishRideScreen1> {
                                 decoration: const InputDecoration(
                                     border: InputBorder.none,
                                     hintText: 'Add Dest'),
+                                onFieldSubmitted: (value) =>
+                                    _onSubmit(value, false),
                               ),
                             ),
                           ),
@@ -219,12 +244,8 @@ class _PublishRideScreen1State extends State<PublishRideScreen1> {
                       // Allow adding markers based on tap location
                       if (_srcMarker == null) {
                         _addMarker(tappedPoint, 0);
-                      } else if (_stop1Marker == null) {
+                      } else {
                         _addMarker(tappedPoint, 1);
-                      } else if (_stop2Marker == null) {
-                        _addMarker(tappedPoint, 2);
-                      } else if (_destMarker == null) {
-                        _addMarker(tappedPoint, 3);
                       }
                     },
                   ),
@@ -259,7 +280,10 @@ class _PublishRideScreen1State extends State<PublishRideScreen1> {
                         child: IconButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (_) => const PublishRideScreen2()));
+                                  builder: (_) => PublishRideScreen2(
+                                        source: _srcController.text,
+                                        destination: _destController.text,
+                                      )));
                             },
                             icon: const Icon(Icons.arrow_forward)),
                       )
@@ -296,8 +320,8 @@ class _PublishRideScreen1State extends State<PublishRideScreen1> {
   }
 }
 
-Widget _buildDottedStoppage(
-    Color color, bool isTerminal, TextEditingController controller) {
+Widget _buildDottedStoppage(Color color, bool isTerminal,
+    TextEditingController controller, Function(String) onSubmit) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisAlignment: MainAxisAlignment.start,
@@ -331,6 +355,7 @@ Widget _buildDottedStoppage(
                 decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: isTerminal ? 'Add Source' : 'Any Stop'),
+                onFieldSubmitted: onSubmit,
               ),
             ),
           ),

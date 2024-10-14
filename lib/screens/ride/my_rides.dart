@@ -1,6 +1,12 @@
 // ignore_for_file: use_key_in_widget_constructors
 
+import 'package:cabmate_task/service/firebase_service.dart';
+import 'package:cabmate_task/utils/ride.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_format/flutter_datetime_format.dart' as fd;
+
+import '../../utils/user.dart';
 
 class MyRidesScreen extends StatefulWidget {
   @override
@@ -10,31 +16,33 @@ class MyRidesScreen extends StatefulWidget {
 
 class _MyRidesScreenState extends State<MyRidesScreen>
     with TickerProviderStateMixin {
-  // Defining all the text variables to be used in the UI
-  final String bookingNo = 'Booking No. #1904465218';
-  final String driverName = 'Robert';
-  final String driverStatus = 'Driver Arriving';
-  final String startLocation =
-      'Block-A, Mondeal Square, Prahlad Nagar,\nAhmedabad, Gujarat 380015, India';
-  final String startTime = '11:00 AM';
-  final String endLocation =
-      '41, Science City, Sola,\nAhmedabad,Gujarat 380060, India';
-  final String endTime = '11:08 AM';
-  final String trackDriver = 'Track Driver';
-  final String trackDriver1 = 'Start Trip';
-  final String price = '\$4.00';
-  final String date = 'Tue, 19th Sep 23';
-  final String perPassenger = 'Per Passenger';
-
   int _currentIndex =
-      1; // Variable to track the current bottom navigation index
+      0; // Variable to track the current bottom navigation index
   late TabController _tabController; // TabController to control TabBarView
+  List<Ride> rides = [];
+  bool _isLoading = true; // Variable to track loading state
+  List<String> weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   @override
   void initState() {
     super.initState();
+
+    fetchRides();
     _tabController =
         TabController(length: 2, vsync: this, initialIndex: _currentIndex);
+  }
+
+  void fetchRides() async {
+    setState(() {
+      _isLoading = true; // Set loading to true before fetching data
+    });
+
+    List<Ride> items = await FirebaseService().getAllRides();
+
+    setState(() {
+      rides = items;
+      _isLoading = false;
+    });
   }
 
   @override
@@ -63,225 +71,307 @@ class _MyRidesScreenState extends State<MyRidesScreen>
           },
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          buildPublishedRideContent(mediaQuery),
-          buildBookedRideContent(mediaQuery),
-        ],
-      ),
+      body: _isLoading
+          ? Center(
+              child:
+                  CircularProgressIndicator(), // Show progress indicator while loading
+            )
+          : TabBarView(
+              controller: _tabController,
+              children: [
+                buildPublishedRideContent(mediaQuery, rides),
+                buildBookedRideContent(mediaQuery, rides),
+              ],
+            ),
     );
   }
 
   // Initial Selected Value
-  String dropdownvalue = 'In process';
+  String dropdownvalue = 'Pending';
 
   // List of items in our dropdown menu
-  var items = [
-    'In process',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-    'Item 5',
-  ];
+  var items = ['Upcoming', 'Pending', 'Completed'];
   var driverStatus1 = "Start Trip";
 
-  // Function to build the content for Booked Ride
-  Widget buildBookedRideContent(Size mediaQuery) {
-    return SingleChildScrollView(
-      child: Container(
-        height: 500,
-        margin: const EdgeInsets.only(top: 6, left: 4, right: 4),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+  Widget buildBookedRideContent(Size mediaQuery, List<Ride> rides) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.black)),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton(
+                  value: dropdownvalue,
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  items: items.map((String item) {
+                    return DropdownMenuItem(
+                      value: item,
+                      child: Text(item),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      dropdownvalue = newValue!;
+                    });
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
-        child: Padding(
-          padding: EdgeInsets.all(mediaQuery.width * 0.02),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox(),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    margin: const EdgeInsets.all(16),
+        Expanded(
+          child: ListView.builder(
+            itemCount: rides.length,
+            itemBuilder: (context, index) {
+              Ride ride = rides[index]; // Get the ride data at this index
+
+              return FutureBuilder<Map<String, dynamic>?>(
+                future: FirebaseService()
+                    .fetchUser(ride.uid), // Call your fetchUser method
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                        child:
+                            CircularProgressIndicator()); // Show loading indicator
+                  }
+
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}'); // Handle errors
+                  }
+
+                  var riderData = snapshot.data; // Get rider data
+                  print(riderData);
+                  return Container(
+                    height: 375,
+                    width: double.infinity,
+                    margin: EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: Colors.black)),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton(
-                        value: dropdownvalue,
-                        icon: const Icon(Icons.keyboard_arrow_down),
-                        items: items.map((String items) {
-                          return DropdownMenuItem(
-                            value: items,
-                            child: Text(items),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            dropdownvalue = newValue!;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.7,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                ),
-                child: Column(
-                  children: [
-                    Text(bookingNo,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    SizedBox(height: mediaQuery.height * 0.02),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(35),
-                            child: SizedBox(
-                              width: 60,
-                              height: 60,
-                              child: Image.network(
-                                "https://i.postimg.cc/mkFpcLtQ/images.jpg",
-                                fit: BoxFit.fill,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: mediaQuery.width * 0.01),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 5.0),
-                            child: Text(driverName,
-                                style: TextStyle(
-                                    fontSize: mediaQuery.width * 0.045,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blue)),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10.0),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: mediaQuery.width * 0.03,
-                                  vertical: mediaQuery.height * 0.005),
-                              decoration: BoxDecoration(
-                                color: Colors.purple,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(driverStatus,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: mediaQuery.width * 0.035)),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: mediaQuery.height * 0.02),
-                    Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text("Start Location",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold)),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 28.0),
-                              child: Text(startLocation,
-                                  style: const TextStyle(color: Colors.grey)),
-                            ),
-                          ],
-                        ),
-                        Text(startTime,
-                            style: const TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold)),
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xffc2c2c2),
+                          spreadRadius: 2,
+                          blurRadius: 1,
+                        )
                       ],
                     ),
-                    SizedBox(height: mediaQuery.height * 0.02),
-                    Row(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text("End Location",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold)),
-                            Text(endLocation,
-                                style: const TextStyle(color: Colors.grey)),
+                            Text(
+                              'Booking No. #${ride.rideId}',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  height: 50,
+                                  width: 50,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                      image: NetworkImage(
+                                        riderData != null &&
+                                                riderData['image'] != null &&
+                                                riderData['image']
+                                                    .toString()
+                                                    .isNotEmpty
+                                            ? riderData['image']
+                                            : 'https://cdn-icons-png.flaticon.com/512/4140/4140048.png', // Default image URL
+                                      ),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                    width: 10), // Space between image and text
+                                Expanded(
+                                  child: Text(
+                                    riderData != null &&
+                                            riderData['name'] != null &&
+                                            riderData['name']
+                                                .toString()
+                                                .isNotEmpty
+                                        ? riderData['name']
+                                        : "Unknown user",
+                                    overflow: TextOverflow
+                                        .ellipsis, // Handle long names
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.radio_button_checked,
+                                      color: Colors.green,
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      'Start Location',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                Text(
+                                  '${ride.date.toDate().hour}:${ride.date.toDate().minute.toString().padLeft(2, '0')} ${ride.date.toDate().hour < 12 ? 'AM' : 'PM'}',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: List.generate(10, (index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 2.0), // space between dots
+                                      child: Container(
+                                        margin: EdgeInsets.only(left: 10),
+                                        height: 4, // size of each dot
+                                        width: 2, // width of the dotted line
+                                        decoration: BoxDecoration(
+                                          color:
+                                              Colors.grey, // color of the dots
+                                          shape: BoxShape.rectangle,
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Flexible(
+                                    child: Text(
+                                  ride.startLoc,
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ))
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.radio_button_checked,
+                                      color: Colors.red,
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      'End Location',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                Text(
+                                  // need update
+                                  '${ride.date.toDate().hour}:${ride.date.toDate().minute.toString().padLeft(2, '0')} ${ride.date.toDate().hour < 12 ? 'AM' : 'PM'}',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                SizedBox(width: 25),
+                                Flexible(
+                                    child: Text(
+                                  ride.startLoc,
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )),
+                              ],
+                            ),
                           ],
                         ),
-                        Text(endTime,
-                            style: const TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold)),
+                        Divider(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              fd.FLDateTime.formatWithNames(
+                                      ride.date.toDate(), 'EEE, MMMM DD, YYYY')
+                                  .toString(),
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '\$${ride.price}',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                Text('Per Person'),
+                              ],
+                            )
+                          ],
+                        )
                       ],
                     ),
-                    const Spacer(),
-                    SizedBox(height: mediaQuery.height * 0.02),
-                    Center(
-                      child: SizedBox(
-                        width: 210,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue),
-                          onPressed: () {},
-                          child: Text(trackDriver,
-                              style: TextStyle(
-                                  fontSize: mediaQuery.width * 0.045,
-                                  color: Colors.white)),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 350,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 12.0),
-                            child: Text(date,
-                                style: const TextStyle(color: Colors.black)),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: Text(price,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.blue,
-                                        fontSize: mediaQuery.width * 0.045)),
-                              ),
-                              Text(perPassenger,
-                                  style: const TextStyle(color: Colors.grey)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+                  );
+                },
+              );
+            },
           ),
         ),
-      ),
+      ],
     );
   }
 
@@ -289,194 +379,224 @@ class _MyRidesScreenState extends State<MyRidesScreen>
   String dropdownvalues = 'Upcoming';
 
   // List of items in our dropdown menu
-  var itemss = [
-    'Upcoming',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-    'Item 5',
-  ];
+  var itemss = ['Upcoming', 'Pending', 'Completed'];
 
-  // Function to build the content for Published Ride
-  Widget buildPublishedRideContent(Size mediaQuery) {
-    return SingleChildScrollView(
-      child: Container(
-        height: 500,
-        margin: const EdgeInsets.only(top: 6, left: 4, right: 4),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(mediaQuery.width * 0.02),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(left: 160),
+  Widget buildPublishedRideContent(Size mediaQuery, List<Ride> rides) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.black)),
+              child: DropdownButtonHideUnderline(
                 child: DropdownButton(
-                  value: dropdownvalues,
+                  value: dropdownvalue,
                   icon: const Icon(Icons.keyboard_arrow_down),
-                  items: itemss.map((String itemss) {
+                  items: items.map((String items) {
                     return DropdownMenuItem(
-                      value: itemss,
-                      child: Text(itemss),
+                      value: items,
+                      child: Text(items),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
                     setState(() {
-                      dropdownvalues = newValue!;
+                      dropdownvalue = newValue!;
                     });
                   },
                 ),
               ),
-              Text(bookingNo,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-              SizedBox(height: mediaQuery.height * 0.02),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(35),
-                      child: SizedBox(
-                        width: 60,
-                        height: 60,
-                        child: Image.network(
-                          "https://i.postimg.cc/mkFpcLtQ/images.jpg",
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: mediaQuery.width * 0.01),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 5.0),
-                      child: Text(driverName,
-                          style: TextStyle(
-                              fontSize: mediaQuery.width * 0.045,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: mediaQuery.width * 0.03,
-                            vertical: mediaQuery.height * 0.005),
-                        decoration: BoxDecoration(
-                          color: Colors.purple,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(driverStatus1,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: mediaQuery.width * 0.035)),
-                      ),
-                    ),
+            ),
+          ],
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: rides.length,
+            itemBuilder: (context, index) {
+              Ride ride = rides[index]; // Get the ride data at this index
+              return Container(
+                height: 302,
+                width: double.infinity,
+                margin: EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xffc2c2c2),
+                      spreadRadius: 2,
+                      blurRadius: 1,
+                    )
                   ],
                 ),
-              ),
-              SizedBox(height: mediaQuery.height * 0.02),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("Start Location",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold)),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 28.0),
-                          child: Text(startLocation,
-                              style: const TextStyle(color: Colors.grey)),
-                        ),
-                      ],
-                    ),
-                    Text(startTime,
-                        style: const TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
-              SizedBox(height: mediaQuery.height * 0.02),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text("End Location",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold)),
-                        Text(endLocation,
-                            style: const TextStyle(color: Colors.grey)),
+                        Text(
+                          'Ride No. #${ride.rideId}',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.radio_button_checked,
+                                  color: Colors.green,
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  'Start Location',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                )
+                              ],
+                            ),
+                            Text(
+                              '${ride.date.toDate().hour}:${ride.date.toDate().minute.toString().padLeft(2, '0')} ${ride.date.toDate().hour < 12 ? 'AM' : 'PM'}',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: List.generate(10, (index) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 2.0), // space between dots
+                                  child: Container(
+                                    margin: EdgeInsets.only(left: 10),
+                                    height: 4, // size of each dot
+                                    width: 2, // width of the dotted line
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey, // color of the dots
+                                      shape: BoxShape.rectangle,
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Flexible(
+                                child: Text(
+                              ride.startLoc,
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ))
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.radio_button_checked,
+                                  color: Colors.red,
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  'End Location',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                )
+                              ],
+                            ),
+                            Text(
+                              // need update
+                              '${ride.date.toDate().hour}:${ride.date.toDate().minute.toString().padLeft(2, '0')} ${ride.date.toDate().hour < 12 ? 'AM' : 'PM'}',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            SizedBox(width: 25),
+                            Flexible(
+                                child: Text(
+                              ride.startLoc,
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )),
+                          ],
+                        ),
                       ],
                     ),
-                    Text(endTime,
-                        style: const TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold)),
+                    Divider(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          fd.FLDateTime.formatWithNames(
+                                  ride.date.toDate(), 'EEE, MMMM DD, YYYY')
+                              .toString(),
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '\$${ride.price}',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                            Text('Per Person'),
+                          ],
+                        )
+                      ],
+                    )
                   ],
                 ),
-              ),
-              const Spacer(),
-              SizedBox(height: mediaQuery.height * 0.02),
-              Center(
-                child: SizedBox(
-                  width: 210,
-                  child: ElevatedButton(
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                    onPressed: () {},
-                    child: Text(trackDriver1,
-                        style: TextStyle(
-                            fontSize: mediaQuery.width * 0.045,
-                            color: Colors.white)),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 350,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: Text(date,
-                            style: const TextStyle(color: Colors.black)),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Text(price,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blue,
-                                    fontSize: mediaQuery.width * 0.045)),
-                          ),
-                          Text(perPassenger,
-                              style: const TextStyle(color: Colors.grey)),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+              );
+            },
           ),
         ),
-      ),
+      ],
     );
   }
 }

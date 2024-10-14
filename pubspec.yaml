@@ -59,6 +59,7 @@ dependencies:
   table_calendar: ^3.1.2
   flutter_datetime_format: ^0.0.1
   cloud_firestore: ^4.17.5
+  uuid: ^4.5.1
  
   
 

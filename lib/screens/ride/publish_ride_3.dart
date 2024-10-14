@@ -1,23 +1,65 @@
 import 'package:cabmate_task/screens/ride/publish_ride_4.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // For formatting the date and time
 
 class PublishRideScreen3 extends StatefulWidget {
-  const PublishRideScreen3({super.key});
+  const PublishRideScreen3({super.key, required this.stops});
+
+  final List<String> stops;
 
   @override
   State<PublishRideScreen3> createState() => _PublishRideScreen3State();
 }
 
 class _PublishRideScreen3State extends State<PublishRideScreen3> {
-  final DateTime _dateTime = DateTime(2023, 9, 19, 11, 0);
+  DateTime _dateTime = DateTime(2023, 9, 19, 11, 0);
   int _numberOfPassengers = 1;
+
+  final _priceController = TextEditingController();
+
+  Future<void> _selectDateTime() async {
+    // Show Date Picker
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: _dateTime.isBefore(DateTime.now())
+          ? DateTime.now()
+          : _dateTime, // Ensure initialDate is today or later
+      firstDate: DateTime.now(), // firstDate is today
+      lastDate: DateTime(2100),
+    );
+
+    if (selectedDate != null) {
+      // Show Time Picker
+      TimeOfDay? selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay(hour: _dateTime.hour, minute: _dateTime.minute),
+      );
+
+      if (selectedTime != null) {
+        setState(() {
+          _dateTime = DateTime(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day,
+            selectedTime.hour,
+            selectedTime.minute,
+          );
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Publish a Ride'),
+        title: const Text(
+          'Publish a Ride',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.blue,
+        automaticallyImplyLeading: false,
+        centerTitle: true,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,14 +117,13 @@ class _PublishRideScreen3State extends State<PublishRideScreen3> {
                         child: TextField(
                           readOnly: true,
                           decoration: InputDecoration(
-                            hintText:
-                                '${_dateTime.day} ${_dateTime.month} ${_dateTime.year} ${_dateTime.hour}:${_dateTime.minute} AM',
+                            hintText: DateFormat('yyyy-MM-dd HH:mm a')
+                                .format(_dateTime),
                             border: InputBorder.none,
                             suffixIcon: const Icon(Icons.calendar_today),
                           ),
-                          onTap: () {
-                            // Implement date picker here if needed
-                          },
+                          onTap:
+                              _selectDateTime, // Trigger the date and time picker
                         ),
                       ),
                     ),
@@ -149,11 +190,10 @@ class _PublishRideScreen3State extends State<PublishRideScreen3> {
                         children: [
                           Expanded(
                             child: TextField(
+                              controller: _priceController,
                               keyboardType: TextInputType.number,
                               decoration: const InputDecoration(
-                                  suffixText: 'USD',
-                                  border: InputBorder.none,
-                                  hintText: '12'),
+                                  border: InputBorder.none, hintText: '12'),
                               onChanged: (value) {
                                 setState(() {});
                               },
@@ -256,7 +296,13 @@ class _PublishRideScreen3State extends State<PublishRideScreen3> {
                   child: IconButton(
                       onPressed: () {
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (_) => const PublishRideScreen4()));
+                            builder: (_) => PublishRideScreen4(
+                                  stops: widget.stops,
+                                  time: _dateTime,
+                                  passengers: _numberOfPassengers,
+                                  price: _numberOfPassengers *
+                                      double.parse(_priceController.text),
+                                )));
                       },
                       icon: const Icon(Icons.arrow_forward)),
                 )

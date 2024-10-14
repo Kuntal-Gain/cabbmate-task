@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomepageState extends State<HomePage> {
-  int selectedIdx = 0;
+  int selectedIdx = 2;
   final NotificationService _notificationService = NotificationService();
 
   @override
