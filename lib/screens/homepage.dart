@@ -2,24 +2,42 @@ import 'package:cabmate_task/screens/profile/profile.dart';
 import 'package:cabmate_task/screens/ride/publish_ride_1.dart';
 import 'package:cabmate_task/screens/ride/search_rides.dart';
 import 'package:cabmate_task/service/notification_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../service/firebase_service.dart';
+import '../utils/user.dart';
 import 'ride/my_rides.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, required this.selectedIdx});
+  final int selectedIdx;
 
   @override
   State<HomePage> createState() => _HomepageState();
 }
 
 class _HomepageState extends State<HomePage> {
-  int selectedIdx = 2;
+  late int selectedIdx;
   final NotificationService _notificationService = NotificationService();
+  final uid = FirebaseAuth.instance.currentUser!.uid;
+  FirebaseService srv = FirebaseService();
+  UserModel? _user;
 
   @override
   void initState() {
+    selectedIdx = widget.selectedIdx;
     _notificationService.initNotification();
+    srv.fetchUser(uid).then((userData) {
+      if (userData != null) {
+        if (mounted) {
+          setState(() {
+            _user =
+                UserModel.fromJson(userData); // Converting Map to User object
+          });
+        }
+      }
+    });
     super.initState();
   }
 
@@ -28,8 +46,16 @@ class _HomepageState extends State<HomePage> {
     final List<Widget> screens = [
       const SearchRides(),
       const PublishRideScreen1(),
-      MyRidesScreen(),
-      const ProfileScreen(),
+      _user != null
+          ? MyRidesScreen(user: _user!)
+          : const Center(
+              child:
+                  CircularProgressIndicator()), // Check if _user is initialized
+      _user != null
+          ? ProfileScreen(user: _user!)
+          : const Center(
+              child:
+                  CircularProgressIndicator()), // Check if _user is initialized
     ];
 
     return Scaffold(

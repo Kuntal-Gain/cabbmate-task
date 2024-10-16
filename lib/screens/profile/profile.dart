@@ -4,6 +4,7 @@ import 'package:cabmate_task/screens/profile/notification_screen.dart';
 import 'package:cabmate_task/screens/profile/qa_screen.dart';
 
 import 'package:cabmate_task/screens/profile/verify_email_screen.dart';
+import 'package:cabmate_task/screens/splash_screen.dart';
 import 'package:cabmate_task/service/firebase_service.dart';
 import 'package:cabmate_task/utils/user.dart';
 import 'package:cabmate_task/widgets/profile_card_tile.dart';
@@ -13,7 +14,9 @@ import 'package:flutter/material.dart';
 import '../../widgets/wallet_tile.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({super.key, required this.user});
+
+  final UserModel user;
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -23,19 +26,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _isSwitched = false;
   final uid = FirebaseAuth.instance.currentUser!.uid;
   FirebaseService srv = FirebaseService();
-  late UserModel _user;
 
   @override
   void initState() {
     super.initState();
-
-    srv.fetchUser(uid).then((userData) {
-      if (userData != null) {
-        setState(() {
-          _user = UserModel.fromJson(userData); // Converting Map to User object
-        });
-      } else {}
-    });
   }
 
   @override
@@ -92,7 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _user.name,
+                                widget.user.name,
                                 style: const TextStyle(
                                   fontSize: 26,
                                   fontWeight: FontWeight.bold,
@@ -102,7 +96,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Row(
                                 children: [
                                   Text(
-                                    _user.email,
+                                    widget.user.email,
                                     style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -126,7 +120,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ],
                               ),
                               Text(
-                                _user.number,
+                                widget.user.number,
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -169,7 +163,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                               ),
                               Text(
-                                '\$${_user.wallet}',
+                                '\$${widget.user.wallet}',
                                 style: const TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
@@ -374,7 +368,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             GestureDetector(
-                onTap: () => FirebaseAuth.instance.signOut(),
+                onTap: () {
+                  FirebaseAuth.instance.signOut();
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) => SplashScreen()));
+                },
                 child:
                     profileCardTile(Colors.blueAccent, "Logout", Icons.logout)),
           ],

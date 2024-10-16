@@ -1,34 +1,19 @@
 import 'package:cabmate_task/screens/ride/booking_summary.dart';
+import 'package:cabmate_task/utils/ride.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_format/flutter_datetime_format.dart' as fd;
 
 class RideDetailsScreen extends StatefulWidget {
-  const RideDetailsScreen({super.key});
-
+  const RideDetailsScreen(
+      {super.key, required this.ride, required this.number});
+  final Ride ride;
+  final int number;
   @override
   // ignore: library_private_types_in_public_api
   _RideDetailsScreenState createState() => _RideDetailsScreenState();
 }
 
 class _RideDetailsScreenState extends State<RideDetailsScreen> {
-  final String startLocation =
-      'Block-A, Mondeal Square, Prahlad Nagar, Ahmedabad, Gujarat 380015, India';
-  final String endLocation =
-      '41, Science City, Sola, Ahmedabad, Gujarat 380060, India';
-  final String carModel = 'Nissan Versa';
-  final String totalPrice = '\$4.00';
-  final String rideTime = 'Tue, 19th Sep 23';
-  final String startTime = '11:00 AM';
-  final String endTime = '11:08 AM';
-  String carImage =
-      'https://imgd.aeplcdn.com/600x337/n/cw/ec/139651/curvv-exterior-right-front-three-quarter.jpeg?isig=0&q=80';
-  String carBrand = 'Nissan';
-  String carNumber = "NY46G3865";
-  var numbers = 1;
-  var price = "\$4.00";
-  String driverName = 'Robert Smith';
-  String driverPhone = '+12586456370';
-  String additionalNotes = 'Nissan black';
-
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context).size;
@@ -105,14 +90,14 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
                               ),
                               const SizedBox(height: 5),
                               Text(
-                                startLocation,
+                                widget.ride.startLoc,
                                 style: TextStyle(
                                   fontSize: mediaQuery.width * 0.04,
                                 ),
                               ),
                               const SizedBox(height: 5),
                               Text(
-                                startTime,
+                                '${widget.ride.startTime.toDate().hour}:${widget.ride.startTime.toDate().minute.toString().padLeft(2, '0')} ${widget.ride.startTime.toDate().hour < 12 ? 'AM' : 'PM'}',
                                 style: TextStyle(
                                   fontSize: mediaQuery.width * 0.04,
                                   color: Colors.grey,
@@ -136,14 +121,14 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
                               ),
                               const SizedBox(height: 5),
                               Text(
-                                endLocation,
+                                widget.ride.endLoc,
                                 style: TextStyle(
                                   fontSize: mediaQuery.width * 0.04,
                                 ),
                               ),
                               const SizedBox(height: 5),
                               Text(
-                                endTime,
+                                '${widget.ride.endTime.toDate().hour}:${widget.ride.endTime.toDate().minute.toString().padLeft(2, '0')} ${widget.ride.endTime.toDate().hour < 12 ? 'AM' : 'PM'}',
                                 style: TextStyle(
                                   fontSize: mediaQuery.width * 0.04,
                                   color: Colors.grey,
@@ -156,13 +141,16 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    rideTime,
+                                    fd.FLDateTime.formatWithNames(
+                                            widget.ride.startTime.toDate(),
+                                            'EEE, MMMM DD, YYYY')
+                                        .toString(),
                                     style: TextStyle(
                                       fontSize: mediaQuery.width * 0.045,
                                     ),
                                   ),
                                   Text(
-                                    totalPrice,
+                                    '\$${widget.ride.price}',
                                     style: TextStyle(
                                       fontSize: mediaQuery.width * 0.045,
                                       color: Colors.blue,
@@ -190,11 +178,16 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              carImage,
-                              fit: BoxFit.cover,
+                            child: Container(
                               width: double.infinity,
-                              height: mediaQuery.height * 0.25,
+                              height: mediaQuery.height *
+                                  0.25, // Fixed height based on media query
+                              child: Image.network(
+                                widget.ride.rideImg.isEmpty
+                                    ? 'https://img.freepik.com/free-vector/car-free-day-symbol-isolated-icon_18591-83177.jpg'
+                                    : widget.ride.rideImg,
+                                fit: BoxFit.fill,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -205,7 +198,7 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  carBrand,
+                                  widget.ride.brand,
                                   style: TextStyle(
                                     fontSize: mediaQuery.width * 0.045,
                                     fontWeight: FontWeight.bold,
@@ -218,7 +211,7 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
                                         color: Colors.black),
                                     const SizedBox(width: 8),
                                     Text(
-                                      carModel,
+                                      widget.ride.rideModel,
                                       style: TextStyle(
                                         fontSize: mediaQuery.width * 0.045,
                                         color: Colors.black,
@@ -233,7 +226,7 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
                                         color: Colors.black),
                                     const SizedBox(width: 8),
                                     Text(
-                                      carNumber,
+                                      widget.ride.rideNameplate,
                                       style: TextStyle(
                                         fontSize: mediaQuery.width * 0.045,
                                         color: Colors.black,
@@ -297,7 +290,7 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      driverName,
+                                      widget.ride.driverName,
                                       style: TextStyle(
                                         fontSize: screenWidth * 0.045,
                                         fontWeight: FontWeight.bold,
@@ -313,7 +306,7 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
                                         InkWell(
                                           onTap: () {},
                                           child: Text(
-                                            driverPhone,
+                                            widget.ride.driverNumber,
                                             style: TextStyle(
                                               fontSize: screenWidth * 0.045,
                                               color: Colors.grey.shade800,
@@ -332,12 +325,6 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    Text(
-                      'Additional Notes: $additionalNotes',
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.04,
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -369,7 +356,7 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
                             ),
                           ),
                           Text(
-                            "For $numbers passengers",
+                            "For ${widget.number} passengers",
                             style: TextStyle(
                               fontSize: mediaQuery.width * 0.04,
                             ),
@@ -377,7 +364,7 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
                         ],
                       ),
                       Text(
-                        price,
+                        '\$${widget.ride.price * widget.number}',
                         style: TextStyle(
                           fontSize: mediaQuery.width * 0.045,
                           color: Colors.blue,
@@ -393,7 +380,8 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
                       onPressed: () {
                         // Action for continue button
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (_) => const BookingSummary()));
+                            builder: (_) => BookingSummary(
+                                ride: widget.ride, seats: widget.number)));
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,

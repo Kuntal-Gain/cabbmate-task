@@ -1,9 +1,21 @@
+import 'dart:math';
+
+import 'package:cabmate_task/models/requests.dart';
+import 'package:cabmate_task/screens/homepage.dart';
 import 'package:cabmate_task/screens/payment/payment_method_screen.dart';
+import 'package:cabmate_task/screens/ride/my_rides.dart';
+import 'package:cabmate_task/service/firebase_service.dart';
+import 'package:cabmate_task/utils/ride.dart';
+import 'package:cabmate_task/utils/snackbar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_format/flutter_datetime_format.dart' as fd;
 
 class BookingSummary extends StatefulWidget {
-  const BookingSummary({super.key});
-
+  const BookingSummary({super.key, required this.ride, required this.seats});
+  final Ride ride;
+  final int seats;
   @override
   // ignore: library_private_types_in_public_api
   _BookingSummaryState createState() => _BookingSummaryState();
@@ -11,13 +23,59 @@ class BookingSummary extends StatefulWidget {
 
 class _BookingSummaryState extends State<BookingSummary> {
   // State variables for price and booking fee
-  final double seatPrice = 4.00;
+
   final double bookingFee = 0.20;
+  String username = "";
 
   // Getter to calculate the total price
-  double get totalPrice => seatPrice + bookingFee;
+  double get totalPrice =>
+      widget.ride.price * widget.seats + bookingFee * widget.seats;
 
   var customer = 1;
+
+  String generateRequestId() {
+    final _random = Random();
+    final randomNumber =
+        _random.nextInt(1000000); // Generates a number between 0 and 999999
+    final requestId =
+        'RID${randomNumber.toString().padLeft(6, '0')}'; // Ensure it's 6 digits long
+    return requestId;
+  }
+
+  Future<String?> getUsername(String uid) async {
+    try {
+      // Fetch the user's document from Firestore
+      DocumentSnapshot userDoc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      // Check if the document exists
+      if (userDoc.exists) {
+        // Assuming the username is stored in a field called 'username'
+        return userDoc['name'] as String?;
+      } else {
+        print('User does not exist.');
+        return null;
+      }
+    } catch (e) {
+      print('Error getting username: $e');
+      return null;
+    }
+  }
+
+  void getName() async {
+    final user = await getUsername(FirebaseAuth.instance.currentUser!.uid);
+
+    setState(() {
+      username = user!;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getName();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,41 +126,53 @@ class _BookingSummaryState extends State<BookingSummary> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: Container(
-                        height: 60,
-                        margin: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.black, width: 2),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'OK',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          height: 60,
+                          margin: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.black, width: 2),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'OK',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
                     Expanded(
-                      child: Container(
-                        height: 60,
-                        margin: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          // border: Border.all(color: Colors.black, width: 2),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'View Rides',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => HomePage(selectedIdx: 2),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          height: 60,
+                          margin: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            // border: Border.all(color: Colors.black, width: 2),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'View Rides',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -143,9 +213,12 @@ class _BookingSummaryState extends State<BookingSummary> {
                         fontWeight: FontWeight.w600),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 8.0),
-                  child: Text('Tue, 19th Sep 23 at 11:00 AM'),
+                Text(
+                  '${fd.FLDateTime.formatWithNames(widget.ride.startTime.toDate(), 'EEE, MMMM DD, YYYY')}  at ${widget.ride.startTime.toDate().hour}:${widget.ride.startTime.toDate().minute.toString().padLeft(2, '0')} ${widget.ride.startTime.toDate().hour < 12 ? 'AM' : 'PM'}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ],
             ),
@@ -177,8 +250,10 @@ class _BookingSummaryState extends State<BookingSummary> {
                     child: Column(
                       children: [
                         // Seat price row
-                        priceRow('1 Seat X \$${seatPrice.toStringAsFixed(2)}',
-                            seatPrice, screenWidth),
+                        priceRow(
+                            '${widget.seats} Seat X \$${widget.ride.price.toStringAsFixed(2)}',
+                            widget.ride.price * widget.seats,
+                            screenWidth),
                         SizedBox(height: screenHeight * 0.01),
                         const Divider(
                           thickness: 1,
@@ -188,7 +263,8 @@ class _BookingSummaryState extends State<BookingSummary> {
                           height: screenHeight * 0.01,
                         ),
                         // Booking fees row
-                        priceRow('Booking fees', bookingFee, screenWidth),
+                        priceRow('Booking fees', bookingFee * widget.seats,
+                            screenWidth),
                       ],
                     ),
                   ),
@@ -221,7 +297,7 @@ class _BookingSummaryState extends State<BookingSummary> {
                           ),
                         ),
                         Text(
-                          "For $customer passengers",
+                          "For ${widget.seats} passengers",
                           style: TextStyle(
                             fontSize: screenWidth * 0.04,
                           ),
@@ -251,10 +327,34 @@ class _BookingSummaryState extends State<BookingSummary> {
                         ),
                       ),
                     )
-                        .then((state) {
-                      // logic to show dialog box
-                      // ignore: use_build_context_synchronously
-                      showBookingDialog(context);
+                        .then((selectedPaymentMethod) {
+                      if (selectedPaymentMethod != null) {
+                        print(
+                            "Selected Payment Method: $selectedPaymentMethod"); // Debug print
+
+                        showBookingDialog(
+                            context); // Show booking dialog after payment
+                        FirebaseService().bookRide(
+                          widget.ride,
+                          Requests(
+                            requestId: generateRequestId(),
+                            imageId: "",
+                            passengerName: username,
+                            method:
+                                selectedPaymentMethod, // Use selected payment method
+                            total: widget.seats,
+                            status: "pending",
+                            rideId: widget.ride.rideId,
+                            uid: widget.ride.uid,
+                            datetime: Timestamp.now(),
+                            fare: widget.ride.price,
+                          ),
+                        );
+
+                        successBar(context, "Ride Booked Successfully");
+                      } else {
+                        print("No payment method selected.");
+                      }
                     });
                   },
                   child: Container(
@@ -276,7 +376,7 @@ class _BookingSummaryState extends State<BookingSummary> {
                       ),
                     ),
                   ),
-                ),
+                )
               ],
             ),
           ),

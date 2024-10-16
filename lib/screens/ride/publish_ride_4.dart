@@ -52,7 +52,14 @@ class _PublishRideScreen4State extends State<PublishRideScreen4> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         centerTitle: true,
-        title: const Text('Publish Ride'),
+        title: const Text(
+          'Publish Ride',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -265,7 +272,7 @@ class _PublishRideScreen4State extends State<PublishRideScreen4> {
                             keyboardType: TextInputType.text,
                             decoration: const InputDecoration(
                                 border: InputBorder.none,
-                                hintText: 'eg. Jhon Doe'),
+                                hintText: 'eg. Nissan'),
                             onChanged: (value) {
                               setState(() {});
                             },
@@ -300,7 +307,7 @@ class _PublishRideScreen4State extends State<PublishRideScreen4> {
                                 keyboardType: TextInputType.text,
                                 decoration: const InputDecoration(
                                     border: InputBorder.none,
-                                    hintText: 'eg. Jhon Doe'),
+                                    hintText: 'eg. XY123'),
                                 onChanged: (value) {
                                   setState(() {});
                                 },
@@ -337,7 +344,7 @@ class _PublishRideScreen4State extends State<PublishRideScreen4> {
                                 keyboardType: TextInputType.text,
                                 decoration: const InputDecoration(
                                     border: InputBorder.none,
-                                    hintText: 'eg. Jhon Doe'),
+                                    hintText: 'eg. 12345XYZ'),
                                 onChanged: (value) {
                                   setState(() {});
                                 },
@@ -374,7 +381,7 @@ class _PublishRideScreen4State extends State<PublishRideScreen4> {
                                 keyboardType: TextInputType.text,
                                 decoration: const InputDecoration(
                                     border: InputBorder.none,
-                                    hintText: 'eg. Jhon Doe'),
+                                    hintText: 'eg. Black'),
                                 onChanged: (value) {
                                   setState(() {});
                                 },
@@ -438,20 +445,24 @@ class _PublishRideScreen4State extends State<PublishRideScreen4> {
                             MaterialPageRoute(
                               builder: (_) => PublishRide5(
                                 ride: Ride(
-                                  uid: FirebaseAuth.instance.currentUser!.uid,
-                                  rideId: generateRideId(),
-                                  rideModel: _modelController.text,
-                                  rideNameplate: _numberController.text,
-                                  rideImg: '',
-                                  color: _colorController.text,
-                                  driverImg: '',
-                                  driverName: _driverController.text,
-                                  driverNumber: _driverContactController.text,
-                                  startLoc: widget.stops[0],
-                                  endLoc: widget.stops[widget.stops.length - 1],
-                                  date: Timestamp.fromDate(widget.time),
-                                  price: widget.price,
-                                ),
+                                    uid: FirebaseAuth.instance.currentUser!.uid,
+                                    rideId: generateRideId(),
+                                    rideModel: _modelController.text,
+                                    rideNameplate: _numberController.text,
+                                    rideImg: '',
+                                    color: _colorController.text,
+                                    driverImg: '',
+                                    driverName: _driverController.text,
+                                    driverNumber: _driverContactController.text,
+                                    startLoc: widget.stops[0],
+                                    endLoc:
+                                        widget.stops[widget.stops.length - 1],
+                                    startTime: Timestamp.fromDate(widget.time),
+                                    endTime: Timestamp.fromDate(
+                                        widget.time.add(Duration(minutes: 30))),
+                                    price: widget.price,
+                                    noOfPassenger: widget.passengers,
+                                    brand: _brandController.text),
                               ),
                             ),
                           );

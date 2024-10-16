@@ -1,5 +1,7 @@
 import 'package:cabmate_task/screens/ride/ride.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class SearchRides extends StatefulWidget {
   const SearchRides({super.key});
@@ -11,6 +13,40 @@ class SearchRides extends StatefulWidget {
 class _SearchRidesState extends State<SearchRides> {
   final _srcController = TextEditingController();
   final _destController = TextEditingController();
+  int totalMembs = 0;
+  DateTime _dateTime = DateTime.now();
+
+  Future<void> _selectDateTime() async {
+    // Show Date Picker
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: _dateTime.isBefore(DateTime.now())
+          ? DateTime.now()
+          : _dateTime, // Ensure initialDate is today or later
+      firstDate: DateTime.now(), // firstDate is today
+      lastDate: DateTime(2100),
+    );
+
+    if (selectedDate != null) {
+      // Show Time Picker
+      TimeOfDay? selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay(hour: _dateTime.hour, minute: _dateTime.minute),
+      );
+
+      if (selectedTime != null) {
+        setState(() {
+          _dateTime = DateTime(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day,
+            selectedTime.hour,
+            selectedTime.minute,
+          );
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -124,13 +160,14 @@ class _SearchRidesState extends State<SearchRides> {
                       ),
                       // Date input field
                       Padding(
-                        padding: const EdgeInsets.only(left: 10, right: 10),
+                        padding: const EdgeInsets.only(left: 28, right: 10),
                         child: TextField(
+                          readOnly: true,
                           decoration: InputDecoration(
+                            hintText: DateFormat('yyyy-MM-dd HH:mm a')
+                                .format(_dateTime),
                             suffixIcon: InkWell(
-                              onTap: () {
-                                // _showCalendar(context); // Calendar picker
-                              },
+                              onTap: _selectDateTime,
                               child: const Icon(Icons.calendar_today),
                             ),
                           ),
@@ -173,10 +210,14 @@ class _SearchRidesState extends State<SearchRides> {
                               color: Colors.black,
                               size: 45,
                             ),
-                            items: List.generate(10, (index) {
+                            value: totalMembs == 0
+                                ? null
+                                : totalMembs, // Set the initial value
+                            items: List.generate(4, (index) {
                               int number = index + 1;
                               return DropdownMenuItem<int>(
-                                value: number,
+                                value:
+                                    number, // Use `number` instead of `totalMembs`
                                 child: Text(
                                   number.toString(),
                                   style: const TextStyle(color: Colors.black),
@@ -184,7 +225,9 @@ class _SearchRidesState extends State<SearchRides> {
                               );
                             }),
                             onChanged: (value) {
-                              // Handle the value change
+                              setState(() {
+                                totalMembs = value!;
+                              });
                             },
                           ),
                         ),
@@ -192,9 +235,12 @@ class _SearchRidesState extends State<SearchRides> {
                       const SizedBox(height: 50),
                       // Search button
                       GestureDetector(
-                        onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (_) => const RidesScreen())),
+                        onTap: () =>
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (_) => RidesScreen(
+                                      time: Timestamp.fromDate(_dateTime),
+                                      number: totalMembs,
+                                    ))),
                         child: Container(
                           height: 60,
                           width: MediaQuery.of(context).size.width * 0.9,

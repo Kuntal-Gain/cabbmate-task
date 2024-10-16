@@ -135,6 +135,8 @@ class _EmailInputScreenState extends State<EmailInputScreen> {
                   image: "",
                   wallet: 10,
                   number: widget.phone,
+                  bookedRides: [],
+                  publishedRides: [],
                 ),
               )
                   .then((_) {
@@ -143,7 +145,9 @@ class _EmailInputScreenState extends State<EmailInputScreen> {
                 successBar(context, "Signup Successful");
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (_) => const HomePage(),
+                    builder: (_) => const HomePage(
+                      selectedIdx: 0,
+                    ),
                   ),
                 );
               }).catchError((error) {

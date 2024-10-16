@@ -5,6 +5,8 @@ class UserModel {
   final String image;
   final double wallet;
   final String number;
+  final List<String> bookedRides; // List of ride IDs (Strings)
+  final List<String> publishedRides; // List of ride IDs (Strings)
 
   UserModel({
     required this.uid,
@@ -13,6 +15,8 @@ class UserModel {
     required this.image,
     required this.wallet,
     required this.number,
+    required this.bookedRides,
+    required this.publishedRides,
   });
 
   // Convert a UserModel object into a Map (JSON format)
@@ -24,6 +28,8 @@ class UserModel {
       'image': image,
       'wallet': wallet,
       'number': number,
+      'bookedRides': bookedRides,
+      'publishedRides': publishedRides,
     };
   }
 
@@ -36,6 +42,10 @@ class UserModel {
       image: json['image'] ?? '',
       number: json['number'] ?? '',
       wallet: (json['wallet'] as num?)?.toDouble() ?? 0.0,
+      // Cast bookedRides to List<String>
+      bookedRides: List<String>.from(json['bookedRides'] ?? []),
+      // Cast publishedRides to List<String>
+      publishedRides: List<String>.from(json['publishedRides'] ?? []),
     );
   }
 }

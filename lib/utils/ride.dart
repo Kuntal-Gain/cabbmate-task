@@ -5,15 +5,18 @@ class Ride {
   final String rideModel;
   final String rideNameplate;
   final String rideImg;
+  final String brand;
   final String color;
   final String driverImg;
   final String driverName;
   final String driverNumber;
   final String startLoc;
   final String endLoc;
-  final Timestamp date;
+  final Timestamp startTime;
+  final Timestamp endTime;
   final double price;
   final String uid;
+  final int noOfPassenger;
 
   Ride({
     required this.rideId,
@@ -26,9 +29,12 @@ class Ride {
     required this.driverNumber,
     required this.startLoc,
     required this.endLoc,
-    required this.date,
+    required this.startTime,
+    required this.endTime,
     required this.price,
     required this.uid,
+    required this.noOfPassenger,
+    required this.brand,
   });
 
   // Convert a Ride object to a Map (JSON format)
@@ -44,9 +50,12 @@ class Ride {
       'driverNumber': driverNumber,
       'startLoc': startLoc,
       'endLoc': endLoc,
-      'date': date,
+      'startTime': startTime,
+      'endTime': endTime,
       'price': price,
       'uid': uid,
+      'total': noOfPassenger,
+      'brand': brand,
     };
   }
 
@@ -63,10 +72,12 @@ class Ride {
       driverNumber: json['driverNumber'] ?? '',
       startLoc: json['startLoc'] ?? '',
       endLoc: json['endLoc'] ?? '',
-      date: json['date'] ??
-          Timestamp.now(), // Assuming date is stored as Timestamp
+      startTime: json['startTime'] ?? Timestamp.now(),
+      endTime: json['endTime'] ?? Timestamp.now(),
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       uid: json['uid'] ?? '',
+      noOfPassenger: json['total'] ?? '',
+      brand: json['brand'] ?? '',
     );
   }
 }

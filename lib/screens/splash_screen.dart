@@ -50,7 +50,9 @@ class _SplashScreenState extends State<SplashScreen>
             );
           } else if (snap.hasData && snap.data != null) {
             // If user is logged in, navigate to HomePage
-            return const HomePage();
+            return const HomePage(
+              selectedIdx: 0,
+            );
           } else {
             // If no user, navigate to SignUpPage
             return const MobileNumberScreen();

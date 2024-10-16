@@ -49,7 +49,10 @@ class _GiftCardSuccessfulPaymentState extends State<GiftCardSuccessfulPayment> {
             GestureDetector(
               onTap: () {
                 Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (ctx) => const HomePage()),
+                  MaterialPageRoute(
+                      builder: (ctx) => const HomePage(
+                            selectedIdx: 0,
+                          )),
                   (route) => false,
                 );
               },

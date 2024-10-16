@@ -300,8 +300,7 @@ class _PublishRideScreen3State extends State<PublishRideScreen3> {
                                   stops: widget.stops,
                                   time: _dateTime,
                                   passengers: _numberOfPassengers,
-                                  price: _numberOfPassengers *
-                                      double.parse(_priceController.text),
+                                  price: double.parse(_priceController.text),
                                 )));
                       },
                       icon: const Icon(Icons.arrow_forward)),

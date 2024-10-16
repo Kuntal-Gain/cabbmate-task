@@ -1,28 +1,47 @@
 import 'package:cabmate_task/screens/ride/rides_details.dart';
+import 'package:cabmate_task/utils/snackbar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class RidesScreen extends StatelessWidget {
-  const RidesScreen({super.key});
+import '../../service/firebase_service.dart';
+import '../../utils/ride.dart';
+import 'package:flutter_datetime_format/flutter_datetime_format.dart' as fd;
+
+class RidesScreen extends StatefulWidget {
+  const RidesScreen({super.key, required this.time, required this.number});
+  final Timestamp time;
+  final int number;
+
+  @override
+  State<RidesScreen> createState() => _RidesScreenState();
+}
+
+class _RidesScreenState extends State<RidesScreen> {
+  bool _isLoading = false;
+
+  List<Ride> rides = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchRides();
+  }
+
+  void fetchRides() async {
+    setState(() {
+      _isLoading = true; // Set loading to true before fetching data
+    });
+
+    List<Ride> items = await FirebaseService().getAllRides();
+
+    setState(() {
+      rides = items.where((item) => item.noOfPassenger > 0).toList();
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Get device width for responsive design
-    final deviceWidth = MediaQuery.of(context).size.width;
-
-    // Store the values in variables for easy reference
-    const cardElevation = 3.0;
-    const cardMargin = EdgeInsets.symmetric(vertical: 8.0);
-    const borderRadiusValue = 20.0;
-    final boxShadowColor = Colors.grey.shade200;
-    const boxShadowSpreadRadius = 3.0;
-    const boxShadowBlurRadius = 3.0;
-    const containerMargin = EdgeInsets.only(left: 10, right: 10, bottom: 12);
-    const cardPadding = EdgeInsets.all(5.0);
-    final imageSize = deviceWidth * 0.12; // Responsive image size
-    const imageRadius = 20.0;
-    const fontSizeName = 16.0;
-    const fontSizeRideNo = 15.0;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
@@ -41,88 +60,54 @@ class RidesScreen extends StatelessWidget {
               color: Colors.white,
             )),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(8.0),
-        children: [
-          rideCard(
-            context,
-            'Emma Brown',
-            'Block-A, Mondeal Square, Prahlad Nagar, Ahmedabad, Gujarat 380015, India',
-            '41, Science City, Sola, Ahmedabad, Gujarat 380060, India',
-            '11:00 AM',
-            '11:08 AM',
-            '4.00',
-            'Tue, 19th Sep 23',
-            deviceWidth,
-            cardElevation,
-            cardMargin,
-            borderRadiusValue,
-            boxShadowColor,
-            boxShadowSpreadRadius,
-            boxShadowBlurRadius,
-            containerMargin,
-            cardPadding,
-            imageSize,
-            imageRadius,
-            fontSizeName,
-            fontSizeRideNo,
-          ),
-          rideCard(
-            context,
-            'Robert Smith',
-            'Block-A, Mondeal Square, Prahlad Nagar, Ahmedabad, Gujarat 380015, India',
-            '41, Science City, Sola, Ahmedabad, Gujarat 380060, India',
-            '11:00 AM',
-            '11:08 AM',
-            '4.00',
-            'Tue, 19th Sep 23',
-            deviceWidth,
-            cardElevation,
-            cardMargin,
-            borderRadiusValue,
-            boxShadowColor,
-            boxShadowSpreadRadius,
-            boxShadowBlurRadius,
-            containerMargin,
-            cardPadding,
-            imageSize,
-            imageRadius,
-            fontSizeName,
-            fontSizeRideNo,
-          ),
-        ],
+      body: ListView.builder(
+        itemCount: rides.length,
+        itemBuilder: (ctx, idx) {
+          final ride = rides[idx];
+
+          return FutureBuilder(
+              future: FirebaseService().fetchUser(ride.uid),
+              builder: (ctx, snap) {
+                var riderData = snap.data;
+
+                if (snap.connectionState == ConnectionState.waiting) {
+                  print('Loading');
+                }
+
+                if (snap.hasError) {
+                  failureBar(context, "Something Went Wrong");
+                }
+
+                return rideCard(context, ride, riderData);
+              });
+        },
       ),
     );
   }
 
   Widget rideCard(
-    BuildContext context,
-    String name,
-    String startLocation,
-    String endLocation,
-    String startTime,
-    String endTime,
-    String fare,
-    String date,
-    double deviceWidth,
-    double cardElevation,
-    EdgeInsets cardMargin,
-    double borderRadiusValue,
-    Color boxShadowColor,
-    double boxShadowSpreadRadius,
-    double boxShadowBlurRadius,
-    EdgeInsets containerMargin,
-    EdgeInsets cardPadding,
-    double imageSize,
-    double imageRadius,
-    double fontSizeName,
-    double fontSizeRideNo,
-  ) {
+      BuildContext context, Ride ride, Map<String, dynamic>? riderData) {
+    // Get device width for responsive design
+    final deviceWidth = MediaQuery.of(context).size.width;
+    // Store the values in variables for easy reference
+    const cardElevation = 3.0;
+    const cardMargin = EdgeInsets.symmetric(vertical: 8.0);
+    const borderRadiusValue = 20.0;
+    final boxShadowColor = Colors.grey.shade200;
+    const boxShadowSpreadRadius = 3.0;
+    const boxShadowBlurRadius = 3.0;
+    const containerMargin = EdgeInsets.only(left: 10, right: 10, bottom: 12);
+    const cardPadding = EdgeInsets.all(5.0);
+    final imageSize = deviceWidth * 0.12; // Responsive image size
+    const imageRadius = 20.0;
+    const fontSizeName = 16.0;
+    const fontSizeRideNo = 15.0;
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => const RideDetailsScreen(),
+            builder: (_) =>
+                RideDetailsScreen(ride: ride, number: widget.number),
           ),
         );
       },
@@ -152,7 +137,7 @@ class RidesScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0, bottom: 10),
                   child: Text(
-                    'Ride No: #123456789',
+                    'Ride No: ${ride.rideId}',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: fontSizeRideNo,
@@ -171,7 +156,11 @@ class RidesScreen extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(50),
                         child: Image.network(
-                          'https://i.postimg.cc/HL5ZHL9y/attractive-1869761-1280.jpg',
+                          riderData != null &&
+                                  riderData['image'] != null &&
+                                  riderData['image'].toString().isNotEmpty
+                              ? riderData['image']
+                              : 'https://cdn-icons-png.flaticon.com/512/4140/4140048.png',
                           fit: BoxFit.fill,
                         ),
                       ),
@@ -181,7 +170,7 @@ class RidesScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          name,
+                          ride.driverName,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: fontSizeName,
@@ -189,12 +178,40 @@ class RidesScreen extends StatelessWidget {
                         ),
                       ],
                     ),
+                    SizedBox(width: 10),
+                    Container(
+                      height: 25,
+                      width: 70,
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.people,
+                            color: Colors.white,
+                          ),
+                          SizedBox(width: 5),
+                          Text(
+                            ride.noOfPassenger.toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
                   ],
                 ),
                 const SizedBox(height: 16),
-                locationInfo('Start Location', startLocation, startTime),
+                locationInfo('Start Location', ride.startLoc,
+                    '${ride.startTime.toDate().hour}:${ride.startTime.toDate().minute.toString().padLeft(2, '0')} ${ride.startTime.toDate().hour < 12 ? 'AM' : 'PM'}'),
                 const SizedBox(height: 10),
-                locationInfo('End Location', endLocation, endTime),
+                locationInfo('End Location', ride.endLoc,
+                    '${ride.endTime.toDate().hour}:${ride.endTime.toDate().minute.toString().padLeft(2, '0')} ${ride.endTime.toDate().hour < 12 ? 'AM' : 'PM'}'),
                 const SizedBox(height: 5),
                 Divider(
                   thickness: 2,
@@ -204,7 +221,9 @@ class RidesScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      date,
+                      fd.FLDateTime.formatWithNames(
+                              ride.startTime.toDate(), 'EEE, MMMM DD, YYYY')
+                          .toString(),
                       style: const TextStyle(
                         color: Colors.black,
                       ),
@@ -213,7 +232,7 @@ class RidesScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          '\$$fare',
+                          '\$${ride.price}',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.blue,

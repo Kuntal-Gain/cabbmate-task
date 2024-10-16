@@ -119,7 +119,7 @@ class _PublishRide5State extends State<PublishRide5> {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          '${widget.ride.date.toDate().hour} : ${widget.ride.date.toDate().minute.toString().padLeft(2, '0')}',
+                          '${widget.ride.startTime.toDate().hour} : ${widget.ride.startTime.toDate().minute.toString().padLeft(2, '0')}',
                           style: TextStyle(
                             fontSize: mediaQuery.width * 0.04,
                             color: Colors.grey,
@@ -156,7 +156,7 @@ class _PublishRide5State extends State<PublishRide5> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '${widget.ride.date.toDate().hour}:${widget.ride.date.toDate().minute.toString().padLeft(2, '0')}',
+                              '${widget.ride.startTime.toDate().hour}:${widget.ride.startTime.toDate().minute.toString().padLeft(2, '0')}',
                               style: TextStyle(
                                 fontSize: mediaQuery.width * 0.045,
                               ),
@@ -225,8 +225,10 @@ class _PublishRide5State extends State<PublishRide5> {
                     onTap: () {
                       FirebaseService().addRide(widget.ride);
                       successBar(context, "New Ride is Added");
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const HomePage()));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => const HomePage(
+                                selectedIdx: 0,
+                              )));
                     },
                     child: const Center(
                         child: Text(

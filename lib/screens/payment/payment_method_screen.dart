@@ -15,6 +15,11 @@ import 'package:mailer/smtp_server/gmail.dart';
 
 enum PaymentType { GiftCard, Wallet, Payment }
 
+List<Payment> methods = [
+  Payment(icon: Icons.credit_card, label: "Card", value: "123 456 789"),
+  Payment(icon: Icons.wallet, label: "Wallet", value: "\$115.00"),
+];
+
 class PaymentMethodScreen extends StatefulWidget {
   const PaymentMethodScreen({
     super.key,
@@ -30,11 +35,6 @@ class PaymentMethodScreen extends StatefulWidget {
 }
 
 class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
-  List<Payment> methods = [
-    Payment(icon: Icons.credit_card, label: "Card", value: "123 456 789"),
-    Payment(icon: Icons.wallet, label: "Wallet", value: "\$115.00"),
-  ];
-
   int selectedIdx = 0;
 
   String generateEmail(GiftCard card) {
@@ -207,6 +207,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           child: CardDetailsForm(
             data: widget.paymentData,
             type: widget.paymentType,
+            selected: selectedIdx,
           ),
         );
       },
@@ -276,11 +277,12 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                   // send mail
                   sendEmailWithGmailSMTP(widget.paymentData);
                 });
-              } else if (widget.paymentType == PaymentType.Payment) {}
+              } else if (widget.paymentType == PaymentType.Payment) {
+                // payment logic
 
-              // payment logic
+                // Navigator.pop(context, methods[selectedIdx].label);
+              }
               showCardDetailsBottomSheet(context);
-
               // await ApiService().payNow();
             },
             child: Container(
@@ -314,10 +316,15 @@ class CardDetailsForm extends StatelessWidget {
   final TextEditingController expiryDateController = TextEditingController();
   final TextEditingController cvvController = TextEditingController();
 
-  CardDetailsForm({super.key, required this.data, required this.type});
+  CardDetailsForm(
+      {super.key,
+      required this.data,
+      required this.type,
+      required this.selected});
 
   final PaymentType type;
   final dynamic data;
+  final int selected;
 
   @override
   Widget build(BuildContext context) {
@@ -411,7 +418,7 @@ class CardDetailsForm extends StatelessWidget {
                     builder: (_) => PaymentSuccessScreen(giftCard: data)));
               } else if (type == PaymentType.Payment) {
                 Navigator.pop(context);
-                Navigator.pop(context);
+                Navigator.pop(context, methods[selected].label);
               }
             } else {
               DelightToastBar(
