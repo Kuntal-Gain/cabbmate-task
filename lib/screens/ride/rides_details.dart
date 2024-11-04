@@ -178,7 +178,7 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Container(
+                            child: SizedBox(
                               width: double.infinity,
                               height: mediaQuery.height *
                                   0.25, // Fixed height based on media query

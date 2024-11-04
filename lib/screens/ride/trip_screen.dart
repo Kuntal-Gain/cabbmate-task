@@ -1,12 +1,15 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:cabmate_task/utils/ride.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
 class TripScreen extends StatefulWidget {
-  const TripScreen({super.key});
+  const TripScreen({super.key, required this.ride});
+
+  final Ride ride;
 
   @override
   State<TripScreen> createState() => _TripScreenState();

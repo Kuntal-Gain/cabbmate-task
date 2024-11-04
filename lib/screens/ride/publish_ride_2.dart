@@ -53,9 +53,8 @@ class _PublishRideScreen2State extends State<PublishRideScreen2> {
       if (locations.isNotEmpty) {
         return LatLng(locations.first.latitude, locations.first.longitude);
       }
-    } catch (e) {
-      print('Error occurred while converting address: $e');
-    }
+      // ignore: empty_catches
+    } catch (e) {}
     return null;
   }
 

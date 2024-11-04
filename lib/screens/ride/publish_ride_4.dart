@@ -5,7 +5,6 @@ import 'package:cabmate_task/utils/ride.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../utils/country.dart';
 
@@ -458,8 +457,8 @@ class _PublishRideScreen4State extends State<PublishRideScreen4> {
                                     endLoc:
                                         widget.stops[widget.stops.length - 1],
                                     startTime: Timestamp.fromDate(widget.time),
-                                    endTime: Timestamp.fromDate(
-                                        widget.time.add(Duration(minutes: 30))),
+                                    endTime: Timestamp.fromDate(widget.time
+                                        .add(const Duration(minutes: 30))),
                                     price: widget.price,
                                     noOfPassenger: widget.passengers,
                                     brand: _brandController.text),

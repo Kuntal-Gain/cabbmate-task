@@ -1,5 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'package:cabmate_task/screens/credential/login_screen.dart';
+
 import 'package:flutter/material.dart';
 
 import 'email_registration.dart';
@@ -110,6 +112,19 @@ class _NameScreenState extends State<NameScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 20),
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const LoginScreen()));
+                },
+                child: const Text(
+                  'Already Have Account? Login Here',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 18,
+                  ),
+                )),
             const Spacer(),
           ],
         ),

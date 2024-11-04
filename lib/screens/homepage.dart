@@ -30,13 +30,18 @@ class _HomepageState extends State<HomePage> {
     _notificationService.initNotification();
     srv.fetchUser(uid).then((userData) {
       if (userData != null) {
+        print('Fetched userData: $userData'); // Add this line for debugging
         if (mounted) {
           setState(() {
             _user =
                 UserModel.fromJson(userData); // Converting Map to User object
           });
         }
+      } else {
+        print('Failed to fetch user data.'); // Add error logging
       }
+    }).catchError((error) {
+      print('Error fetching user data: $error'); // Handle any exceptions
     });
     super.initState();
   }
@@ -47,15 +52,15 @@ class _HomepageState extends State<HomePage> {
       const SearchRides(),
       const PublishRideScreen1(),
       _user != null
-          ? MyRidesScreen(user: _user!)
+          ? MyRidesScreen(user: _user!) // Check if _user is initialized
           : const Center(
               child:
-                  CircularProgressIndicator()), // Check if _user is initialized
+                  CircularProgressIndicator()), // Show a loader until _user is initialized
       _user != null
-          ? ProfileScreen(user: _user!)
+          ? ProfileScreen(user: _user!) // Check if _user is initialized
           : const Center(
               child:
-                  CircularProgressIndicator()), // Check if _user is initialized
+                  CircularProgressIndicator()), // Show a loader until _user is initialized
     ];
 
     return Scaffold(

@@ -1,9 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:math';
 
 import 'package:cabmate_task/models/requests.dart';
 import 'package:cabmate_task/screens/homepage.dart';
 import 'package:cabmate_task/screens/payment/payment_method_screen.dart';
-import 'package:cabmate_task/screens/ride/my_rides.dart';
 import 'package:cabmate_task/service/firebase_service.dart';
 import 'package:cabmate_task/utils/ride.dart';
 import 'package:cabmate_task/utils/snackbar.dart';
@@ -34,9 +35,9 @@ class _BookingSummaryState extends State<BookingSummary> {
   var customer = 1;
 
   String generateRequestId() {
-    final _random = Random();
+    final random = Random();
     final randomNumber =
-        _random.nextInt(1000000); // Generates a number between 0 and 999999
+        random.nextInt(1000000); // Generates a number between 0 and 999999
     final requestId =
         'RID${randomNumber.toString().padLeft(6, '0')}'; // Ensure it's 6 digits long
     return requestId;
@@ -53,11 +54,9 @@ class _BookingSummaryState extends State<BookingSummary> {
         // Assuming the username is stored in a field called 'username'
         return userDoc['name'] as String?;
       } else {
-        print('User does not exist.');
         return null;
       }
     } catch (e) {
-      print('Error getting username: $e');
       return null;
     }
   }
@@ -72,7 +71,6 @@ class _BookingSummaryState extends State<BookingSummary> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getName();
   }
@@ -153,7 +151,7 @@ class _BookingSummaryState extends State<BookingSummary> {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (_) => HomePage(selectedIdx: 2),
+                              builder: (_) => const HomePage(selectedIdx: 2),
                             ),
                           );
                         },
@@ -215,7 +213,7 @@ class _BookingSummaryState extends State<BookingSummary> {
                 ),
                 Text(
                   '${fd.FLDateTime.formatWithNames(widget.ride.startTime.toDate(), 'EEE, MMMM DD, YYYY')}  at ${widget.ride.startTime.toDate().hour}:${widget.ride.startTime.toDate().minute.toString().padLeft(2, '0')} ${widget.ride.startTime.toDate().hour < 12 ? 'AM' : 'PM'}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
@@ -329,8 +327,7 @@ class _BookingSummaryState extends State<BookingSummary> {
                     )
                         .then((selectedPaymentMethod) {
                       if (selectedPaymentMethod != null) {
-                        print(
-                            "Selected Payment Method: $selectedPaymentMethod"); // Debug print
+                        // Debug print
 
                         showBookingDialog(
                             context); // Show booking dialog after payment
@@ -352,9 +349,7 @@ class _BookingSummaryState extends State<BookingSummary> {
                         );
 
                         successBar(context, "Ride Booked Successfully");
-                      } else {
-                        print("No payment method selected.");
-                      }
+                      } else {}
                     });
                   },
                   child: Container(

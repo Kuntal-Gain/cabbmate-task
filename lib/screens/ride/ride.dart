@@ -17,8 +17,6 @@ class RidesScreen extends StatefulWidget {
 }
 
 class _RidesScreenState extends State<RidesScreen> {
-  bool _isLoading = false;
-
   List<Ride> rides = [];
 
   @override
@@ -29,14 +27,13 @@ class _RidesScreenState extends State<RidesScreen> {
 
   void fetchRides() async {
     setState(() {
-      _isLoading = true; // Set loading to true before fetching data
+// Set loading to true before fetching data
     });
 
     List<Ride> items = await FirebaseService().getAllRides();
 
     setState(() {
       rides = items.where((item) => item.noOfPassenger > 0).toList();
-      _isLoading = false;
     });
   }
 
@@ -70,9 +67,7 @@ class _RidesScreenState extends State<RidesScreen> {
               builder: (ctx, snap) {
                 var riderData = snap.data;
 
-                if (snap.connectionState == ConnectionState.waiting) {
-                  print('Loading');
-                }
+                if (snap.connectionState == ConnectionState.waiting) {}
 
                 if (snap.hasError) {
                   failureBar(context, "Something Went Wrong");
@@ -138,7 +133,7 @@ class _RidesScreenState extends State<RidesScreen> {
                   padding: const EdgeInsets.only(left: 8.0, bottom: 10),
                   child: Text(
                     'Ride No: ${ride.rideId}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontSize: fontSizeRideNo,
                       fontWeight: FontWeight.bold,
@@ -171,14 +166,14 @@ class _RidesScreenState extends State<RidesScreen> {
                       children: [
                         Text(
                           ride.driverName,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: fontSizeName,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Container(
                       height: 25,
                       width: 70,
@@ -189,14 +184,14 @@ class _RidesScreenState extends State<RidesScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.people,
                             color: Colors.white,
                           ),
-                          SizedBox(width: 5),
+                          const SizedBox(width: 5),
                           Text(
                             ride.noOfPassenger.toString(),
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
@@ -220,12 +215,15 @@ class _RidesScreenState extends State<RidesScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      fd.FLDateTime.formatWithNames(
-                              ride.startTime.toDate(), 'EEE, MMMM DD, YYYY')
-                          .toString(),
-                      style: const TextStyle(
-                        color: Colors.black,
+                    Expanded(
+                      child: Text(
+                        fd.FLDateTime.formatWithNames(
+                                ride.startTime.toDate(), 'EEE, MMMM DD, YYYY')
+                            .toString(),
+                        style: const TextStyle(
+                          color: Colors.black,
+                        ),
+                        overflow: TextOverflow.ellipsis, // Prevents overflow
                       ),
                     ),
                     Column(
@@ -237,6 +235,8 @@ class _RidesScreenState extends State<RidesScreen> {
                             fontWeight: FontWeight.bold,
                             color: Colors.blue,
                           ),
+                          overflow:
+                              TextOverflow.ellipsis, // Prevents price overflow
                         ),
                         const Padding(
                           padding: EdgeInsets.only(left: 130.0),
@@ -246,6 +246,8 @@ class _RidesScreenState extends State<RidesScreen> {
                               fontWeight: FontWeight.bold,
                               color: Colors.blue,
                             ),
+                            overflow: TextOverflow
+                                .ellipsis, // Prevents "Per Passenger" overflow
                           ),
                         ),
                       ],

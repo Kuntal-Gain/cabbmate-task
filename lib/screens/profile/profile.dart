@@ -1,9 +1,12 @@
 import 'package:cabmate_task/screens/giftcard/gift_card_screen.dart';
+import 'package:cabmate_task/screens/giftcard/redeem_giftcard.dart';
 import 'package:cabmate_task/screens/profile/contact_us.dart';
 import 'package:cabmate_task/screens/profile/notification_screen.dart';
 import 'package:cabmate_task/screens/profile/qa_screen.dart';
+import 'package:cabmate_task/screens/profile/sos.dart';
 
 import 'package:cabmate_task/screens/profile/verify_email_screen.dart';
+import 'package:cabmate_task/screens/profile/wallet_screen.dart';
 import 'package:cabmate_task/screens/splash_screen.dart';
 import 'package:cabmate_task/service/firebase_service.dart';
 import 'package:cabmate_task/utils/user.dart';
@@ -138,76 +141,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   top: 200,
                   left: 20,
                   right: 20,
-                  child: Container(
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                        color: const Color(0xffc2c2c2),
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Wallet Balance',
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              Text(
-                                '\$${widget.user.wallet}',
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Divider(),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              walletTile(
-                                Icons.wallet,
-                                "Wallet",
-                                Colors.pink,
-                                Container(),
-                                context,
-                              ),
-                              walletTile(
-                                Icons.account_balance_wallet,
-                                "Top Up",
-                                Colors.purple,
-                                Container(),
-                                context,
-                              ),
-                              walletTile(
-                                Icons.inbox,
-                                "Invite",
-                                Colors.orange,
-                                Container(),
-                                context,
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
+                  child: GestureDetector(
+                    // Move GestureDetector here
+                    onTap: () {},
+                    child: walletCard(widget.user),
                   ),
                 ),
               ],
@@ -231,8 +168,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Colors.deepPurple, "Notifications", Icons.notifications),
             ),
             profileCardTile(Colors.orange, "Invite Friends", Icons.inbox),
-            profileCardTile(Colors.greenAccent.shade100, "Emergency Contacts",
-                Icons.call_rounded),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => EmergencyContactsScreen()));
+              },
+              child: profileCardTile(Colors.greenAccent.shade100,
+                  "Emergency Contacts", Icons.call_rounded),
+            ),
             profileCardTile(Colors.green, "Donate", Icons.how_to_vote),
             const SizedBox(height: 20),
             const Padding(
@@ -297,7 +240,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: profileCardTile(
                     Colors.red, "Payment Method", Icons.payment)),
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => WalletScreen(user: widget.user)));
+              },
               child: profileCardTile(Colors.blue, "My Wallet", Icons.wallet),
             ),
             profileCardTile(Colors.orange, "Add Money", Icons.money),
@@ -319,8 +265,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: profileCardTile(
                   Colors.brown, "Send Gift Card", Icons.wallet_giftcard),
             ),
-            profileCardTile(
-                Colors.blue, "Redeem Gift Card", Icons.card_giftcard),
+            GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => RedeemGiftCardScreen())),
+              child: profileCardTile(
+                  Colors.blue, "Redeem Gift Card", Icons.card_giftcard),
+            ),
             const Padding(padding: EdgeInsets.all(10)),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -370,8 +320,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             GestureDetector(
                 onTap: () {
                   FirebaseAuth.instance.signOut();
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (_) => SplashScreen()));
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const SplashScreen()));
                 },
                 child:
                     profileCardTile(Colors.blueAccent, "Logout", Icons.logout)),
@@ -380,4 +330,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+}
+
+Widget walletCard(UserModel user) {
+  return Container(
+    height: 200,
+    decoration: BoxDecoration(
+      color: Colors.white,
+      border: Border.all(
+        color: const Color(0xffc2c2c2),
+      ),
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Wallet Balance',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              Text(
+                '\$${user.wallet}',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          child: Divider(),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              GestureDetector(
+                onTap: () {},
+                child: Material(
+                  color: Colors
+                      .transparent, // Use transparent to keep the background
+                  child: walletTile(
+                    Icons.wallet,
+                    "Wallet",
+                    Colors.pink,
+                  ),
+                ),
+              ),
+              walletTile(
+                Icons.account_balance_wallet,
+                "Top Up",
+                Colors.purple,
+              ),
+              walletTile(
+                Icons.inbox,
+                "Invite",
+                Colors.orange,
+              ),
+            ],
+          ),
+        )
+      ],
+    ),
+  );
 }

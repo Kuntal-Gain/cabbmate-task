@@ -54,6 +54,7 @@ class _PublishRideScreen1State extends State<PublishRideScreen1> {
     }
 
     Position position = await Geolocator.getCurrentPosition(
+      // ignore: deprecated_member_use
       desiredAccuracy: LocationAccuracy.high,
     );
 
@@ -152,10 +153,9 @@ class _PublishRideScreen1State extends State<PublishRideScreen1> {
         throw Exception('No locations found for the input address.');
       }
     } catch (e) {
-      print('Failed to get location from address: $e');
-
       // Handle timeout or other errors by showing an alert or default fallback
       showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),

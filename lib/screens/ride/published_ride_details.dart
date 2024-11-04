@@ -1,10 +1,7 @@
 import 'package:cabmate_task/models/requests.dart';
-import 'package:cabmate_task/screens/homepage.dart';
 import 'package:cabmate_task/service/firebase_service.dart';
 import 'package:cabmate_task/utils/ride.dart';
-import 'package:cabmate_task/utils/snackbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_format/flutter_datetime_format.dart';
 import 'package:flutter_datetime_format/flutter_datetime_format.dart' as fd;
 
 class PublishedRideDetails extends StatefulWidget {
@@ -31,7 +28,6 @@ class _PublishedRideDetailsState extends State<PublishedRideDetails> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchRequests();
   }
@@ -43,7 +39,7 @@ class _PublishedRideDetailsState extends State<PublishedRideDetails> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         centerTitle: true,
-        title: Text("Ride Details"),
+        title: const Text("Ride Details"),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -92,7 +88,7 @@ class _PublishedRideDetailsState extends State<PublishedRideDetails> {
 
                 // requests section
                 if (requests.isNotEmpty)
-                  Container(
+                  SizedBox(
                     height:
                         mediaQuery.height * 0.3, // or some other fixed value
                     child: ListView.builder(
@@ -102,200 +98,210 @@ class _PublishedRideDetailsState extends State<PublishedRideDetails> {
 
                         return Container(
                           height: mediaQuery.height * 0.28,
-                          margin: EdgeInsets.all(10),
+                          margin: const EdgeInsets.all(10),
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            border: Border.all(color: Color(0xffc2c2c2)),
+                            border: Border.all(color: const Color(0xffc2c2c2)),
                           ),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  request.imageId.isNotEmpty
-                                      ? Image.network(request.imageId)
-                                      : Container(
-                                          height: 75,
-                                          width: 75,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey,
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          margin: EdgeInsets.all(10),
-                                        ),
-                                  Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        request.passengerName,
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      RichText(
-                                          text: TextSpan(
-                                        children: [
-                                          TextSpan(
-                                              text: 'Payment Mode : ',
-                                              style: TextStyle(
-                                                color: Colors.grey,
-                                              )),
-                                          TextSpan(
-                                              text: request.method,
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold,
-                                              )),
-                                        ],
-                                      )),
-                                      Text(
-                                        'You will get credited after by admin Later',
-                                        style: TextStyle(
-                                          color: Colors.grey,
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Row(
                                   children: [
-                                    Row(
+                                    request.imageId.isNotEmpty
+                                        ? Image.network(request.imageId)
+                                        : Container(
+                                            height: 75,
+                                            width: 75,
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            margin: const EdgeInsets.all(10),
+                                          ),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Icon(Icons.people),
-                                        SizedBox(width: 10),
                                         Text(
-                                          '${request.total} Passenger(s)',
-                                          style: TextStyle(
+                                          request.passengerName,
+                                          style: const TextStyle(
+                                            fontSize: 18,
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 20,
+                                          ),
+                                        ),
+                                        RichText(
+                                          text: TextSpan(
+                                            children: [
+                                              const TextSpan(
+                                                  text: 'Payment Mode : ',
+                                                  style: TextStyle(
+                                                    color: Colors.grey,
+                                                  )),
+                                              TextSpan(
+                                                  text: request.method,
+                                                  style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                  )),
+                                            ],
+                                          ),
+                                        ),
+                                        const Text(
+                                          'You will get credited after by admin Later',
+                                          style: TextStyle(
+                                            color: Colors.grey,
                                           ),
                                         ),
                                       ],
-                                    ),
-                                    Text(
-                                      '\$${request.fare}',
-                                      style: TextStyle(
-                                        color: Colors.blue,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20,
-                                      ),
                                     )
                                   ],
                                 ),
-                              ),
-                              Text('Waiting for an Approval'),
-                              if (request.status == "pending")
-                                Row(
-                                  children: [
-                                    Expanded(
-                                        child: GestureDetector(
-                                      onTap: () {
-                                        FirebaseService()
-                                            .rejectRide(request.requestId);
-                                        fetchRequests();
-                                      },
-                                      child: Container(
-                                        height: 60,
-                                        margin: EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          border: Border.all(
-                                              color: Colors.black45, width: 2),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        child: Center(
-                                            child: Text(
-                                          'Decline',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.people),
+                                          const SizedBox(width: 10),
+                                          Text(
+                                            '${request.total} Passenger(s)',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20,
+                                            ),
                                           ),
-                                        )),
+                                        ],
                                       ),
-                                    )),
-                                    Expanded(
-                                        child: GestureDetector(
-                                      onTap: () {
-                                        FirebaseService()
-                                            .acceptRide(request.requestId);
-                                        fetchRequests();
-                                      },
-                                      child: Container(
-                                        height: 60,
-                                        margin: EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
+                                      Text(
+                                        '\$${request.fare}',
+                                        style: const TextStyle(
                                           color: Colors.blue,
-                                          border: Border.all(
-                                              color: Color(0xffc2c2c2),
-                                              width: 2),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
                                         ),
-                                        child: Center(
-                                            child: Text(
-                                          'Accept',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                if (request.status == "pending")
+                                  const Text('Waiting for an Approval'),
+                                if (request.status == "pending")
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            FirebaseService()
+                                                .rejectRide(request.requestId);
+                                            fetchRequests();
+                                          },
+                                          child: Container(
+                                            height: 60,
+                                            margin: const EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              border: Border.all(
+                                                  color: Colors.black45,
+                                                  width: 2),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: const Center(
+                                              child: Text(
+                                                'Decline',
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
                                           ),
-                                        )),
+                                        ),
                                       ),
-                                    ))
-                                  ],
-                                ),
-                              if (request.status == "accepted")
-                                Container(
-                                  height: 60,
-                                  width: double.infinity,
-                                  margin: EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue,
-                                    borderRadius: BorderRadius.circular(10),
+                                      Expanded(
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            FirebaseService()
+                                                .acceptRide(request.requestId);
+                                            fetchRequests();
+                                          },
+                                          child: Container(
+                                            height: 60,
+                                            margin: const EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                              color: Colors.blue,
+                                              border: Border.all(
+                                                  color:
+                                                      const Color(0xffc2c2c2),
+                                                  width: 2),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: const Center(
+                                              child: Text(
+                                                'Accept',
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  child: Center(
-                                    child: Text(
-                                      'Ride Accepted',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20,
+                                if (request.status == "accepted")
+                                  Container(
+                                    height: 60,
+                                    width: double.infinity,
+                                    margin: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: const Center(
+                                      child: Text(
+                                        'Ride Accepted',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              if (request.status == "rejected")
-                                Container(
-                                  height: 60,
-                                  width: double.infinity,
-                                  margin: EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      'Ride Rejected',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20,
+                                if (request.status == "rejected")
+                                  Container(
+                                    height: 60,
+                                    width: double.infinity,
+                                    margin: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: const Center(
+                                      child: Text(
+                                        'Ride Rejected',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                            ],
+                              ],
+                            ),
                           ),
                         );
                       },
@@ -323,7 +329,7 @@ class _PublishedRideDetailsState extends State<PublishedRideDetails> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Container(
+                        child: SizedBox(
                           width: double.infinity,
                           height: mediaQuery.height *
                               0.25, // Fixed height based on media query
@@ -386,7 +392,7 @@ class _PublishedRideDetailsState extends State<PublishedRideDetails> {
                   ),
                 ),
                 ListTile(
-                  title: Text(
+                  title: const Text(
                     "Route",
                     style: TextStyle(
                         color: Colors.black, fontWeight: FontWeight.bold),
@@ -394,7 +400,7 @@ class _PublishedRideDetailsState extends State<PublishedRideDetails> {
                   subtitle: Text(
                     fd.FLDateTime.formatWithNames(
                         widget.ride.startTime.toDate(), 'EEE, MMMM DD, YYYY'),
-                    style: TextStyle(color: Colors.black45),
+                    style: const TextStyle(color: Colors.black45),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -512,10 +518,14 @@ Widget verifyTiles(String type, int num) {
     decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
-          topLeft: num == 0 ? Radius.circular(16) : Radius.circular(0),
-          topRight: num == 0 ? Radius.circular(16) : Radius.circular(0),
-          bottomLeft: num == 3 ? Radius.circular(16) : Radius.circular(0),
-          bottomRight: num == 3 ? Radius.circular(16) : Radius.circular(0),
+          topLeft:
+              num == 0 ? const Radius.circular(16) : const Radius.circular(0),
+          topRight:
+              num == 0 ? const Radius.circular(16) : const Radius.circular(0),
+          bottomLeft:
+              num == 3 ? const Radius.circular(16) : const Radius.circular(0),
+          bottomRight:
+              num == 3 ? const Radius.circular(16) : const Radius.circular(0),
         ),
         boxShadow: const [
           BoxShadow(
@@ -529,7 +539,7 @@ Widget verifyTiles(String type, int num) {
       children: [
         Text(
           type,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
           ),
         ),

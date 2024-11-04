@@ -2,11 +2,13 @@
 
 import 'package:cabmate_task/screens/payment/payment_success.dart';
 import 'package:cabmate_task/service/api_service.dart';
+import 'package:cabmate_task/service/firebase_service.dart';
 import 'package:cabmate_task/utils/gift_card.dart';
 import 'package:cabmate_task/utils/payment.dart';
 import 'package:cabmate_task/widgets/payment_card.dart';
 import 'package:delightful_toast/delight_toast.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -414,11 +416,18 @@ class CardDetailsForm extends StatelessWidget {
             var isSuccessful = await ApiService().payNow();
             if (isSuccessful) {
               if (type == PaymentType.GiftCard) {
+                FirebaseService().addGiftCard(data);
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => PaymentSuccessScreen(giftCard: data)));
               } else if (type == PaymentType.Payment) {
                 Navigator.pop(context);
                 Navigator.pop(context, methods[selected].label);
+              } else if (type == PaymentType.Wallet) {
+                FirebaseService()
+                    .addMoney(FirebaseAuth.instance.currentUser!.uid, data);
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pop(context);
               }
             } else {
               DelightToastBar(

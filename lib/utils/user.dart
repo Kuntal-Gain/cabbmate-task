@@ -33,19 +33,27 @@ class UserModel {
     };
   }
 
-  // Create a UserModel object from a Map (typically from Firestore)
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      uid: json['uid'] ?? '',
-      name: json['name'] ?? '',
-      email: json['email'] ?? '',
-      image: json['image'] ?? '',
-      number: json['number'] ?? '',
-      wallet: (json['wallet'] as num?)?.toDouble() ?? 0.0,
-      // Cast bookedRides to List<String>
-      bookedRides: List<String>.from(json['bookedRides'] ?? []),
-      // Cast publishedRides to List<String>
-      publishedRides: List<String>.from(json['publishedRides'] ?? []),
+      uid: json['uid'] ?? '', // Handle null and fallback to empty string
+      name: json['name'] ?? '', // Handle null and fallback to empty string
+      email: json['email'] ?? '', // Handle null and fallback to empty string
+      image: json['image'] ?? '', // Handle null and fallback to empty string
+      number: json['number'] ?? '', // Handle null and fallback to empty string
+      wallet: (json['wallet'] as num?)?.toDouble() ??
+          0.0, // Safely convert to double
+
+      // Check if bookedRides is a String or a List, and handle accordingly
+      bookedRides: (json['bookedRides'] is String)
+          ? [json['bookedRides']] // If it's a String, wrap it in a List
+          : List<String>.from(
+              json['bookedRides'] ?? []), // Otherwise, treat it as a List
+
+      // Same handling for publishedRides
+      publishedRides: (json['publishedRides'] is String)
+          ? [json['publishedRides']] // If it's a String, wrap it in a List
+          : List<String>.from(
+              json['publishedRides'] ?? []), // Otherwise, treat it as a List
     );
   }
 }

@@ -90,11 +90,12 @@ class ContactUsPage extends StatelessWidget {
                     ),
                     child: const TextField(
                       decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Tap to Write',
-                          hintStyle: TextStyle(
-                            color: Color(0xffc2c2c2),
-                          )),
+                        border: InputBorder.none,
+                        hintText: 'Tap to Write',
+                        hintStyle: TextStyle(
+                          color: Color(0xffc2c2c2),
+                        ),
+                      ),
                     ),
                   ),
                   const Padding(
@@ -120,11 +121,12 @@ class ContactUsPage extends StatelessWidget {
                     child: const TextField(
                       maxLines: 3,
                       decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Tap to Write',
-                          hintStyle: TextStyle(
-                            color: Color(0xffc2c2c2),
-                          )),
+                        border: InputBorder.none,
+                        hintText: 'Tap to Write',
+                        hintStyle: TextStyle(
+                          color: Color(0xffc2c2c2),
+                        ),
+                      ),
                     ),
                   ),
                   Container(

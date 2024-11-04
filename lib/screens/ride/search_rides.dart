@@ -30,6 +30,7 @@ class _SearchRidesState extends State<SearchRides> {
     if (selectedDate != null) {
       // Show Time Picker
       TimeOfDay? selectedTime = await showTimePicker(
+        // ignore: use_build_context_synchronously
         context: context,
         initialTime: TimeOfDay(hour: _dateTime.hour, minute: _dateTime.minute),
       );
@@ -51,7 +52,9 @@ class _SearchRidesState extends State<SearchRides> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+        body: SafeArea(
+      child: SingleChildScrollView(
+        // Add SingleChildScrollView here
         child: Column(
           children: [
             Center(
@@ -88,187 +91,170 @@ class _SearchRidesState extends State<SearchRides> {
                 ),
               ),
             ),
-            Expanded(
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: const Color(0xffc2c2c2)),
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: Container(
-                width: double.infinity,
-                margin: const EdgeInsets.all(12),
+                width: MediaQuery.of(context).size.width * 0.9,
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  border: Border.all(color: const Color(0xffc2c2c2)),
-                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                child: Container(
-                  width: MediaQuery.of(context).size.width *
-                      0.9, // Adjust based on screen width
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Column(
-                    children: [
-                      // Text field for location input
-                      _buildDottedStoppage(Colors.blue, true, _srcController),
-                      Row(
-                        children: [
-                          Container(
-                            height: 20, // You can adjust the size
-                            width: 20,
+                child: Column(
+                  children: [
+                    _buildDottedStoppage(Colors.blue, true, _srcController),
+                    Row(
+                      children: [
+                        Container(
+                          height: 20,
+                          width: 20,
+                          decoration: const BoxDecoration(
+                              color: Colors.blue, shape: BoxShape.circle),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            height: 50,
                             decoration: const BoxDecoration(
-                                color: Colors.blue, shape: BoxShape.circle),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              height: 50,
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                              ),
-                              child: TextFormField(
-                                controller: _destController,
-                                decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Add Dest'),
-                              ),
+                              color: Colors.white,
                             ),
+                            child: TextFormField(
+                              controller: _destController,
+                              decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: 'Add Dest'),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 12.0, top: 15),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Select Date",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Icon(
+                            Icons.star,
+                            size: 17,
+                            color: Colors.red,
                           ),
                         ],
                       ),
-                      // Date selector label
-                      const Padding(
-                        padding: EdgeInsets.only(left: 12.0, top: 15),
-                        child: Row(
-                          children: [
-                            Text(
-                              "Select Date",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Icon(
-                              Icons.star,
-                              size: 17,
-                              color: Colors.red,
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Date input field
-                      Padding(
-                        padding: const EdgeInsets.only(left: 28, right: 10),
-                        child: TextField(
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            hintText: DateFormat('yyyy-MM-dd HH:mm a')
-                                .format(_dateTime),
-                            suffixIcon: InkWell(
-                              onTap: _selectDateTime,
-                              child: const Icon(Icons.calendar_today),
-                            ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 28, right: 10),
+                      child: TextField(
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          hintText: DateFormat('yyyy-MM-dd HH:mm a')
+                              .format(_dateTime),
+                          suffixIcon: InkWell(
+                            onTap: _selectDateTime,
+                            child: const Icon(Icons.calendar_today),
                           ),
                         ),
                       ),
-                      // Person selector label
-                      const Padding(
-                        padding: EdgeInsets.only(left: 18.0, top: 10),
-                        child: Row(
-                          children: [
-                            Text(
-                              "Person",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 15),
-                            ),
-                            Icon(Icons.star, color: Colors.red, size: 18),
-                          ],
-                        ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 18.0, top: 10),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Person",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 15),
+                          ),
+                          Icon(Icons.star, color: Colors.red, size: 18),
+                        ],
                       ),
-                      const SizedBox(height: 5),
-                      // Dropdown for selecting number of persons
-                      Center(
-                        child: Container(
-                          width: MediaQuery.of(context).size.width *
-                              0.8, // Adjust based on screen size
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 2),
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                          ),
-                          child: DropdownButton<int>(
-                            isExpanded: true,
-                            hint: const Text(
-                              "Select a number",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            dropdownColor: Colors.white,
-                            icon: const Icon(
-                              Icons.arrow_drop_down,
-                              color: Colors.black,
-                              size: 45,
-                            ),
-                            value: totalMembs == 0
-                                ? null
-                                : totalMembs, // Set the initial value
-                            items: List.generate(4, (index) {
-                              int number = index + 1;
-                              return DropdownMenuItem<int>(
-                                value:
-                                    number, // Use `number` instead of `totalMembs`
-                                child: Text(
-                                  number.toString(),
-                                  style: const TextStyle(color: Colors.black),
-                                ),
-                              );
-                            }),
-                            onChanged: (value) {
-                              setState(() {
-                                totalMembs = value!;
-                              });
-                            },
-                          ),
+                    ),
+                    const SizedBox(height: 5),
+                    Center(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
                         ),
-                      ),
-                      const SizedBox(height: 50),
-                      // Search button
-                      GestureDetector(
-                        onTap: () =>
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (_) => RidesScreen(
-                                      time: Timestamp.fromDate(_dateTime),
-                                      number: totalMembs,
-                                    ))),
-                        child: Container(
-                          height: 60,
-                          width: MediaQuery.of(context).size.width * 0.9,
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(12),
+                        child: DropdownButton<int>(
+                          isExpanded: true,
+                          hint: const Text(
+                            "Select a number",
+                            style: TextStyle(color: Colors.black),
                           ),
-                          child: const Center(
-                            child: Text(
-                              'Search',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 23,
+                          dropdownColor: Colors.white,
+                          icon: const Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.black,
+                            size: 45,
+                          ),
+                          value: totalMembs == 0 ? null : totalMembs,
+                          items: List.generate(4, (index) {
+                            int number = index + 1;
+                            return DropdownMenuItem<int>(
+                              value: number,
+                              child: Text(
+                                number.toString(),
+                                style: const TextStyle(color: Colors.black),
                               ),
+                            );
+                          }),
+                          onChanged: (value) {
+                            setState(() {
+                              totalMembs = value!;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 50),
+                    GestureDetector(
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => RidesScreen(
+                                time: Timestamp.fromDate(_dateTime),
+                                number: totalMembs,
+                              ))),
+                      child: Container(
+                        height: 60,
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Search',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 23,
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildDottedStoppage(
